@@ -2,9 +2,10 @@
 
 This is a tool which can index documents such as PDFs and Markdown files and then allows to do a semantic search over the indexed documents. The end goal is a centralized search engine over "all" PBS documentation.
 
-This RAGFlow instance is explicitly not intended to directly build LLM pipelines and agents, even though RAGFlow of course supports this. LLM pipelines should be implemented externally and may use this tool via MCP to look up relevant scouting-specific information.
+This RAGFlow instance is explicitly not intended to directly build LLM pipelines and agents within it, even though RAGFlow supports this. LLM pipelines should be implemented externally and may use this tool via MCP to look up relevant scouting-specific information.
 
 ## Features and roadmap
+- [ ] Set up deployment again, this time using fluxcd
 - [ ] MiData login (currently, the MiData test instance is used, waiting for approval of a production OAuth app)
 - [ ] Add more data sources
   - [ ] Feature parity with pfadi.ai/cudesch and replace the Supabase implementation there with calls to RAGFlow
@@ -19,7 +20,7 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
   - [ ] (optional) Cudesch PDFs from issuu that aren't yet on cudesch.scout.ch
 - [ ] Automate document re-indexing when some documentation changes
 - [ ] Set up multiple datasets / knowledge bases or another way to filter the documents by relevance to common use cases (e.g. only documents for J+S Basis courses)
-- [x] MCP server so that LLMs can use this tool
+- [ ] MCP server so that LLMs can use this tool
 - [ ] Set up multilinguality / separate datasets for the French and Italian versions of the documentation
 - [ ] Set up some automated end-to-end testing
 - [ ] Set up renovate bot to auto-update all third-party software
@@ -33,36 +34,25 @@ For now, this tool is maintained by [Cosinus](https://github.com/carlobeltrame) 
 ### Set up environment variables
 
 ```shell
-cp .env.example .env
-vi .env
+cp secrets.example.yml secrets.yml
+vi secrets.yml # secrets must be base64 encoded
 ```
 
 ### Creating passwords for the values
 
 ```shell
-openssl rand -hex 16 | pbcopy
+openssl rand -hex 16 | base64 - | pbcopy
 ```
 
-## Installation / Upgrade
+## Deployment
 
-```shell
-. .env && helm upgrade --install ragflow ./helm \
-  --set ingress.host="$APP_DOMAIN" \
-  --set postgres.password="$POSTGRES_PASSWORD" \
-  --set elasticsearch.password="$ELASTIC_PASSWORD" \
-  --set minio.password="$MINIO_PASSWORD" \
-  --set redis.password="$REDIS_PASSWORD" \
-  --set ragflow.service_conf.oauth.midata.issuer="$MIDATA_BASE_URL" \
-  --set ragflow.service_conf.oauth.midata.client_id="$MIDATA_CLIENT_ID" \
-  --set ragflow.service_conf.oauth.midata.client_secret="$MIDATA_CLIENT_SECRET" \
-  --set ragflow.service_conf.oauth.midata.redirect_uri="$MIDATA_OIDC_CALLBACK_URL" \
-  --set mcp.enabled=true \
-  --set mcp.ingress.host="$MCP_DOMAIN" \
-  --set mcp.ragflowApiKey="$MCP_RAGFLOW_API_KEY"
-
-## or, on subsequent deployments
-helm upgrade --reuse-values ragflow ./helm
+Deployment is done automatically via FluxCD. See https://github.com/scout-ch/tractor-k8s-shared
+On first install, some secrets need to be created manually (or externally) into the existing namespace. Using the secrets.yml created above:
+```bash
+kubectl apply -f secrets.yml
 ```
+
+After that, any changes pushed to this repository are automatically deployed.
 
 The helm chart was taken and adapted from [the RAGFlow repository](https://github.com/infiniflow/ragflow/tree/main/helm), and the original is published under the Apache License 2.0. All modifications to the original are, as long as they are not contributed and merged back into the upstream original, available under the MIT license.
 
