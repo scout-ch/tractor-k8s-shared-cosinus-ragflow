@@ -83,6 +83,9 @@ ragflow:
   # Whether new users may register. 1 means activated, 0 means deactivated
   registerEnabled: 0
 
+postgres:
+  password: infini_rag_flow_helm
+
 mcp:
   enabled: false
   # The MCP server needs an API key to access and expose the RAGFlow API
@@ -156,25 +159,6 @@ minio:
   rootUser: rag_flow
   # The password for MinIO
   password: infini_rag_flow_helm
-
-mysql:
-  image:
-    repository: mysql
-    tag: 8.0.39
-    pullPolicy: IfNotPresent
-    pullSecrets: []
-  storage:
-    className:
-    capacity: 5Gi
-  deployment:
-    strategy:
-    resources:
-  service:
-    type: ClusterIP
-  # The password for MySQL
-  password: infini_rag_flow_helm
-  # The database of the MySQL service to use
-  dbname: rag_flow
 
 redis:
   image:
