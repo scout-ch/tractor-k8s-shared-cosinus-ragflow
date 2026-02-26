@@ -65,3 +65,5 @@ spec:
         ragflowApiKey:
           secret: ragflow-mcp
           secretKey: apiKey
+    nodeSelector:
+      kaas.infomaniak.cloud/instance-pool: pck-8kxhclv-pm8

@@ -14,4 +14,8 @@ spec:
       - 'wget'
       args:
       - {{ printf "%s.%s.svc" (include "ragflow.fullname" .) .Release.Namespace }}
+  {{- with .Values.nodeSelector }}
+  nodeSelector:
+    {{- . | toYaml | nindent 4 }}
+  {{- end }}
   restartPolicy: Never

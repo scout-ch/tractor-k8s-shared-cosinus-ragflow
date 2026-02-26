@@ -55,6 +55,10 @@ spec:
         resources:
           {{- . | toYaml | nindent 10 }}
         {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service

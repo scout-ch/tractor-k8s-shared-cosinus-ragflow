@@ -88,6 +88,10 @@ spec:
         - name: service-conf-volume
           configMap:
             name: {{ include "ragflow.fullname" . }}-service-config
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service
