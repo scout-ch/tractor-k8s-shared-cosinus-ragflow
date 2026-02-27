@@ -3,3 +3,5 @@
 /.env.local
 /secrets.yml
 /secrets.yaml
+/values.yml
+/values.yaml
