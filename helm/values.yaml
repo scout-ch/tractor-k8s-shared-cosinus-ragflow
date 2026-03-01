@@ -197,8 +197,6 @@ ingress:
   annotations:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure # necessary, since we have multiple entrypoints
-    traefik.ingress.kubernetes.io/router.tls.certresolver: letsencrypt
   host: ""
   tls: []
   #  - secretName: chart-example-tls

@@ -55,7 +55,15 @@ spec:
       targetPath: mcp.ragflowApiKey
   values:
     ingress:
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure # necessary, since we have multiple entrypoints
+        cert-manager.io/cluster-issuer: letsencrypt
       host: rag.pfadi.ai
+      tls:
+        - hosts:
+            - rag.pfadi.ai
+            - mcp.rag.pfadi.ai
+          secretName: tls-cert
     ragflow:
       service_conf:
         oauth:

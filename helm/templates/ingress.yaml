@@ -12,12 +12,16 @@ spec:
   {{- with .Values.ingress.className }}
   ingressClassName: {{ . }}
   {{- end }}
+  {{- if .Values.ingress.tls }}
   tls:
+    {{- range .Values.ingress.tls }}
     - hosts:
-        - {{ .Values.ingress.host | quote }}
-        {{- if .Values.mcp.enabled }}
-        - {{ .Values.mcp.ingress.host | quote }}
+        {{- range .hosts }}
+        - {{ . | quote }}
         {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
   rules:
     {{- if .Values.mcp.enabled }}
     - host: {{ .Values.mcp.ingress.host | required "mcp.ingress.host is required whan mcp.enabled is set" | quote }}
@@ -32,7 +36,7 @@ spec:
                   name: mcp
     {{- end }}
 
-    - host: {{ .Values.ingress.host | required "ragflow.ingress.host is required" | quote }}
+    - host: {{ .Values.ingress.host | required "ingress.host is required" | quote }}
       http:
         paths:
           - path: /
