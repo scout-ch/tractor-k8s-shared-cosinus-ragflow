@@ -17,7 +17,7 @@ metadata:
   namespace: cosinus-ragflow
 spec:
   serviceAccountName: cosinus-ragflow
-  interval: 10m0s
+  interval: 5m0s
   chart:
     spec:
       chart: helm
@@ -25,6 +25,10 @@ spec:
         kind: GitRepository
         name: ragflow
   valuesFrom:
+    - kind: Secret
+      name: ragflow-server
+      valuesKey: secretKey
+      targetPath: ragflow.secret_key
     - kind: Secret
       name: ragflow-midata-oauth
       valuesKey: clientId

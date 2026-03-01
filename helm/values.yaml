@@ -8,9 +8,10 @@ env:
 ragflow:
   image:
     repository: infiniflow/ragflow
-    tag: v0.20.4-slim
+    tag: v0.24.0
     pullPolicy: IfNotPresent
     pullSecrets: []
+  secret_key:
   # Optional service configuration overrides
   # to be written to local.service_conf.yaml
   # inside the RAGFlow container
@@ -54,7 +55,7 @@ ragflow:
     strategy:
     resources:
       requests:
-        memory: "1Gi"
+        memory: "2Gi"
         cpu: "200m"
       limits:
         memory: "4Gi"
@@ -99,10 +100,10 @@ mcp:
     strategy:
     resources:
       requests:
-        memory: "100Mi"
+        memory: "200Mi"
         cpu: "50m"
       limits:
-        memory: "200Mi"
+        memory: "400Mi"
         cpu: "200m"
   ingress:
     host: ""
