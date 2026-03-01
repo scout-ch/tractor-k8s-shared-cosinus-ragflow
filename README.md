@@ -35,7 +35,7 @@ For now, this tool is maintained by [Cosinus](https://github.com/carlobeltrame) 
 
 ```shell
 cp secrets.example.yml secrets.yml
-vi secrets.yml # secrets must be base64 encoded
+vi secrets.yml
 ```
 
 ### Creating passwords for the values
@@ -58,7 +58,7 @@ The helm chart was taken and adapted from [the RAGFlow repository](https://githu
 
 Command used for initial installation:
 ```bash
-# ... create a values.yaml with only the values part of fluxcd/ragflow.yaml and insert the secret values as literal strings
+# ... create a values.yaml with only the values part of fluxcd/ragflow.yaml and insert the secret values referenced in valuesFrom.*.targetPath as literal strings
 helm upgrade --install --namespace "cosinus-ragflow" ragflow ./helm -f values.yaml
 ```
 
