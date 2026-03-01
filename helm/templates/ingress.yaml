@@ -32,7 +32,7 @@ spec:
                   name: mcp
     {{- end }}
 
-    - host: {{ .Values.ingress.host | required "ingress.host is required" | quote }}
+    - host: {{ .Values.ingress.host | required "ragflow.ingress.host is required" | quote }}
       http:
         paths:
           - path: /

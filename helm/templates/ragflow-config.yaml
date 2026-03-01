@@ -13,10 +13,7 @@ data:
   Use host names derived from internal cluster DNS
   */}}
   REDIS_HOST: {{ printf "%s-redis.%s.svc" (include "ragflow.fullname" .) .Release.Namespace | quote }}
-  DATABASE_TYPE: postgres
   DB_TYPE: postgres
-  POSTGRES_HOST: {{ printf "%s-postgres.%s.svc" (include "ragflow.fullname" .) .Release.Namespace | quote }}
-  POSTGRES_DBNAME: {{ .Values.postgres.dbname | quote }}
   MINIO_HOST: {{ printf "%s-minio.%s.svc" (include "ragflow.fullname" .) .Release.Namespace | quote }}
   ES_HOST: {{ printf "%s-es.%s.svc" (include "ragflow.fullname" .) .Release.Namespace | quote }}
   DOC_BULK_SIZE: {{ .Values.ragflow.docBulkSize | quote }}

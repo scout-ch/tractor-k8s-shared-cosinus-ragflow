@@ -26,44 +26,44 @@ spec:
         name: ragflow
   values:
     ingress:
-      host: rag.scout.ch
-      ragflow:
+      host: rag.pfadi.ai
+    ragflow:
+      service_conf:
+        oauth:
+          midata:
+            issuer: https://pbs.puzzle.ch
+            client_id:
+              secret: ragflow-midata-oauth
+              secretKey: clientId
+            client_secret:
+              secret: ragflow-midata-oauth
+              secretKey: clientSecret
+            redirect_uri: https://rag.pfadi.ai/v1/user/oauth/callback/midata
         postgres:
           host: postgres.tractor.scout.ch
+          name: cosinus-ragflow
           user: cosinus-ragflow
           password:
             secret: ragflow-postgres
             secretKey: password
-          dbname: cosinus-ragflow
-        service_conf:
-          oauth:
-            midata:
-              issuer: https://pbs.puzzle.ch
-              client_id:
-                secrets: ragflow-midata-oauth
-                secretKey: clientId
-              client_secret:
-                secrets: ragflow-midata-oauth
-                secretKey: clientSecret
-              redirect_uri: https://rag.pfadi.ai/v1/user/oauth/callback/midata
-      elasticsearch:
-        password:
-          secret: ragflow-elasticsearch
-          secretKey: password
-      minio:
-        password:
-          secret: ragflow-minio
-          secretKey: password
-      redis:
-        password:
-          secret: ragflow-redis
-          secretKey: password
-      mcp:
-        enabled: true
-        ingress:
-          host: mcp.rag.pfadi.ai
-        ragflowApiKey:
-          secret: ragflow-mcp
-          secretKey: apiKey
+    elasticsearch:
+      password:
+        secret: ragflow-elasticsearch
+        secretKey: password
+    minio:
+      password:
+        secret: ragflow-minio
+        secretKey: password
+    redis:
+      password:
+        secret: ragflow-redis
+        secretKey: password
+    mcp:
+      enabled: true
+      ingress:
+        host: mcp.rag.pfadi.ai
+      ragflowApiKey:
+        secret: ragflow-mcp
+        secretKey: apiKey
     nodeSelector:
       kaas.infomaniak.cloud/instance-pool: pck-8kxhclv-pm8

@@ -24,6 +24,14 @@ ragflow:
         issuer: "https://pbs.puzzle.ch"
         scope: openid email
         redirect_uri: #"https://hostname/v1/user/oauth/callback/midata"
+    postgres:
+      name: rag_flow
+      user: rag_flow
+      password:
+      host: postgres
+      port: 5432
+      max_connections: 100
+      stale_timeout: 30
 
   # Optional yaml formatted override for the
   # llm_factories.json file inside the RAGFlow
@@ -83,9 +91,6 @@ ragflow:
   # Whether new users may register. 1 means activated, 0 means deactivated
   registerEnabled: 0
 
-postgres:
-  password: infini_rag_flow_helm
-
 mcp:
   enabled: false
   # The MCP server needs an API key to access and expose the RAGFlow API
@@ -137,7 +142,7 @@ elasticsearch:
   # The version of Elasticsearch.
   stackVersion: "8.11.3"
   # The password for Elasticsearch
-  password: infini_rag_flow_helm
+  password:
   # The local time zone.
   timezone: "Europe/Zurich"
 
@@ -158,7 +163,7 @@ minio:
   # The username for MinIO.
   rootUser: rag_flow
   # The password for MinIO
-  password: infini_rag_flow_helm
+  password:
 
 redis:
   image:
@@ -182,7 +187,7 @@ redis:
   service:
     type: ClusterIP
   # The password for Redis
-  password: infini_rag_flow_helm
+  password:
 
 
 # This block is for setting up web service ingress. For more information, see:

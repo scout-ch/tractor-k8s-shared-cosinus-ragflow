@@ -58,7 +58,7 @@ The helm chart was taken and adapted from [the RAGFlow repository](https://githu
 
 Command used for initial installation:
 ```bash
-# ... create a values.yaml with only the values part of fluxcd/ragflow.yaml
+# ... create a values.yaml with only the values part of fluxcd/ragflow.yaml and insert the secret values as literal strings
 helm upgrade --install --namespace "cosinus-ragflow" ragflow ./helm -f values.yaml
 ```
 
