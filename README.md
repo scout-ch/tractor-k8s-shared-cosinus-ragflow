@@ -41,7 +41,7 @@ vi secrets.yml
 ### Creating passwords for the values
 
 ```shell
-openssl rand -hex 16 | pbcopy
+openssl rand -hex 16 | base64 - | pbcopy
 ```
 
 ## Deployment
