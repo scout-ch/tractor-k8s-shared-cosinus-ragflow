@@ -18,6 +18,7 @@ metadata:
 spec:
   serviceAccountName: cosinus-ragflow
   interval: 10m0s
+  timeout: 120m
   chart:
     spec:
       chart: helm
