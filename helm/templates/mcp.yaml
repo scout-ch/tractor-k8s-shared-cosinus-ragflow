@@ -40,7 +40,6 @@ spec:
           - "./entrypoint.sh"
           - "--disable-webserver"
           - "--disable-taskexecutor"
-          - "--disable-datasync"
           - "--enable-mcpserver"
           - "--mcp-host=0.0.0.0"
           - "--mcp-port=9382"
