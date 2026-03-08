@@ -17,6 +17,10 @@ spec:
         name: cosinus-ragflow
   valuesFrom:
     - kind: Secret
+      name: ragflow-server
+      valuesKey: secretKey
+      targetPath: ragflow.secret_key
+    - kind: Secret
       name: ragflow-midata-oauth
       valuesKey: clientId
       targetPath: ragflow.service_conf.oauth.midata.client_id

@@ -8,9 +8,10 @@ env:
 ragflow:
   image:
     repository: infiniflow/ragflow
-    tag: v0.20.4-slim
+    tag: v0.24.0
     pullPolicy: IfNotPresent
     pullSecrets: []
+  secret_key:
   # Optional service configuration overrides
   # to be written to local.service_conf.yaml
   # inside the RAGFlow container

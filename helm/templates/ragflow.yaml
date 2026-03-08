@@ -47,6 +47,7 @@ spec:
         command:
           - "./entrypoint.sh"
           - "--disable-taskexecutor"
+          - "--disable-datasync"
         ports:
           - containerPort: 80
             name: http

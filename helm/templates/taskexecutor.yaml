@@ -46,6 +46,7 @@ spec:
         command:
           - "./entrypoint.sh"
           - "--disable-webserver"
+          - "--disable-datasync"
         volumeMounts:
           {{- with .Values.ragflow.service_conf }}
           - mountPath: /ragflow/conf/local.service_conf.yaml
