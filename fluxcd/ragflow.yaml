@@ -1,15 +1,4 @@
 ---
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: GitRepository
-metadata:
-  name: ragflow
-  namespace: cosinus-ragflow
-spec:
-  interval: 5m0s
-  url: https://github.com/scout-ch/tractor-k8s-shared-cosinus-ragflow
-  ref:
-    branch: main
----
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -24,7 +13,7 @@ spec:
       chart: helm
       sourceRef:
         kind: GitRepository
-        name: ragflow
+        name: cosinus-ragflow
   valuesFrom:
     - kind: Secret
       name: ragflow-midata-oauth
