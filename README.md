@@ -5,11 +5,13 @@ This is a tool which can index documents such as PDFs and Markdown files and the
 This RAGFlow instance is explicitly not intended to directly build LLM pipelines and agents within it, even though RAGFlow supports this. LLM pipelines should be implemented externally and may use this tool via MCP to look up relevant scouting-specific information.
 
 ## Features and roadmap
-- [ ] Set up deployment again, this time using fluxcd
-- [ ] MiData login (currently, the MiData test instance is used, waiting for approval of a production OAuth app)
-- [ ] Add more data sources
-  - [ ] Feature parity with pfadi.ai/cudesch and replace the Supabase implementation there with calls to RAGFlow
+- [x] Set up deployment again, this time using fluxcd
+- [x] Update ragflow to 0.24
+- [ ] Set up pod for datasync worker
+- [ ] MiData login (currently, the MiData test instance is used, waiting for approval of a production OAuth app; and also, OIDC login is [broken](https://github.com/infiniflow/ragflow/issues/12892) in ragflow 0.24.0)
+- [ ] Add data sources
   - [ ] All cudesch content from cudesch.scout.ch
+  - [ ] Feature parity with pfadi.ai/cudesch and replace the Supabase implementation there with calls to RAGFlow
   - [ ] PDF brochures about education courses (used in Topkurs)
   - [ ] hering.scout.ch
   - [ ] Anker and other pdfs from the PBS download page
@@ -18,12 +20,12 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
   - [ ] thilo and/or "Pfaditechnik in Wort und Bild"
   - [ ] Regional or cantonal documentation
   - [ ] (optional) Cudesch PDFs from issuu that aren't yet on cudesch.scout.ch
-- [ ] Automate document re-indexing when some documentation changes
+- [ ] Automate document re-indexing when some documentation changes (automatic if using native ragflow data sources)
 - [ ] Set up multiple datasets / knowledge bases or another way to filter the documents by relevance to common use cases (e.g. only documents for J+S Basis courses)
 - [ ] MCP server so that LLMs can use this tool
 - [ ] Set up multilinguality / separate datasets for the French and Italian versions of the documentation
 - [ ] Set up some automated end-to-end testing
-- [ ] Set up renovate bot to auto-update all third-party software
+- [ ] Set up renovate bot to auto-update all third-party software (risky, ragflow often breaks things...)
 
 See also the RAGFlow docs here: https://github.com/infiniflow/ragflow
 
