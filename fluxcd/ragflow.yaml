@@ -11,6 +11,7 @@ spec:
   chart:
     spec:
       chart: helm
+      reconcileStrategy: Revision
       sourceRef:
         kind: GitRepository
         name: cosinus-ragflow
