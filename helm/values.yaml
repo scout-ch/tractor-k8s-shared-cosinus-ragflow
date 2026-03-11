@@ -199,6 +199,8 @@ redis:
   # The password for Redis
   password:
 
+datasource:
+  imageBase: ghcr.io/scout-ch/tractor-k8s-shared-cosinus-ragflow
 
 # This block is for setting up web service ingress. For more information, see:
 # https://kubernetes.io/docs/concepts/services-networking/ingress/
