@@ -1,0 +1,77 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ragflow.fullname" . }}-datasync
+  labels:
+    {{- include "ragflow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: datasync
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "ragflow.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: datasync
+  {{- with .Values.ragflow.deployment.strategy }}
+  strategy:
+    {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        {{- include "ragflow.labels" . | nindent 8 }}
+        app.kubernetes.io/component: datasync
+      annotations:
+        checksum/ragflow-secrets: {{ include (print $.Template.BasePath "/ragflow-secrets.yaml") . | sha256sum }}
+        checksum/ragflow-config: {{ include (print $.Template.BasePath "/ragflow-config.yaml") . | sha256sum }}
+    spec:
+      # Kubernetes injects service link environment variables which accidentally match the name of variables
+      # expected inside the mcp server script. So we disable this legacy Kubernetes behaviour here.
+      enableServiceLinks: false
+      {{- if or .Values.imagePullSecrets .Values.ragflow.image.pullSecrets }}
+      imagePullSecrets:
+        {{- with .Values.imagePullSecrets }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.ragflow.image.pullSecrets }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: datasync
+        image: {{ .Values.ragflow.image.repository }}:{{ .Values.ragflow.image.tag }}
+        {{- with .Values.ragflow.image.pullPolicy }}
+        imagePullPolicy: {{ . }}
+        {{- end }}
+        command:
+          - "./entrypoint.sh"
+          - "--disable-webserver"
+          - "--disable-taskexecutor"
+        volumeMounts:
+          {{- with .Values.ragflow.service_conf }}
+          - mountPath: /ragflow/conf/local.service_conf.yaml
+            subPath: local.service_conf.yaml
+            name: service-conf-volume
+          {{- end }}
+          {{- with .Values.ragflow.llm_factories }}
+          - mountPath: /ragflow/conf/llm_factories.json
+            subPath: llm_factories.json
+            name: service-conf-volume
+          {{- end }}
+        envFrom:
+          - secretRef:
+              name: {{ include "ragflow.fullname" . }}-ragflow-secrets
+          - configMapRef:
+              name: {{ include "ragflow.fullname" . }}-ragflow-config
+        {{- with .Values.ragflow.datasync.deployment.resources }}
+        resources:
+          {{- . | toYaml | nindent 10 }}
+        {{- end }}
+      volumes:
+        - name: service-conf-volume
+          configMap:
+            name: {{ include "ragflow.fullname" . }}-service-config
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}

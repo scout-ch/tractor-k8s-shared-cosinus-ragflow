@@ -69,6 +69,15 @@ ragflow:
         limits:
           memory: "8Gi"
           cpu: "1000m"
+  datasync:
+    deployment:
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "200m"
+        limits:
+          memory: "4Gi"
+          cpu: "800m"
   service:
     # Use LoadBalancer to expose the web interface externally
     type: ClusterIP
