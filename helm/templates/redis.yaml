@@ -121,17 +121,3 @@ spec:
   selector:
     {{- include "ragflow.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: redis
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: {{ include "ragflow.fullname" . }}-redis-pdb
-  labels:
-    {{- include "ragflow.labels" . | nindent 4 }}
-    app.kubernetes.io/component: redis
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      {{- include "ragflow.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: redis
