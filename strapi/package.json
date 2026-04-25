@@ -1,0 +1,18 @@
+{
+  "name": "strapi-ragflow-adapter",
+  "version": "1.0.0",
+  "description": "RAGFlow Adapter for Strapi",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "dev": "nodemon --watch '**/*.ts' --exec ts-node app.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.3",
+    "ts-node": "^10.9.2",
+    "nodemon": "^3.1.14"
+  }
+}
