@@ -1,9 +1,30 @@
+import 'dotenv/config';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as Minio from 'minio';
 
 const SUPPORTED_LOCALES = ['de', 'fr', 'it'];
-const BASE_URL = 'https://api.thilo.scouts.ch';
+const BASE_URL = process.env.STRAPI_BASE_URL ?? 'http://localhost:1337/api';
 const OUTPUT_DIR = path.join(__dirname, 'output');
+
+const S3_BUCKET = process.env.S3_BUCKET!;
+const S3_PREFIX = process.env.S3_PREFIX ?? '';
+
+const endpointUrl = new URL(process.env.S3_ENDPOINT!);
+const s3 = new Minio.Client({
+    endPoint: endpointUrl.hostname,
+    port: endpointUrl.port ? parseInt(endpointUrl.port) : undefined,
+    useSSL: endpointUrl.protocol === 'https:',
+    region: process.env.S3_REGION ?? 'fsn1',
+    accessKey: process.env.S3_ACCESS_KEY_ID!,
+    secretKey: process.env.S3_SECRET_ACCESS_KEY!,
+});
+
+async function uploadToS3(key: string, body: string, contentType: string): Promise<void> {
+    const fullKey = S3_PREFIX ? `${S3_PREFIX}/${key}` : key;
+    const buf = Buffer.from(body, 'utf8');
+    await s3.putObject(S3_BUCKET, fullKey, buf, buf.length, { 'Content-Type': contentType });
+}
 
 interface Chapter {
     id: number;
@@ -117,8 +138,13 @@ async function main(): Promise<void> {
             const markdown = buildMarkdown(section);
             fs.writeFileSync(mdPath, markdown, 'utf8');
 
-            const metadata = buildMetadata(section);
-            fs.writeFileSync(metaPath, JSON.stringify(metadata, null, 2), 'utf8');
+            const metadataObj = buildMetadata(section);
+            const metadataJson = JSON.stringify(metadataObj, null, 2);
+            fs.writeFileSync(metaPath, metadataJson, 'utf8');
+
+            // Upload to S3
+            await uploadToS3(`${locale}/${section.id}.md`, markdown, 'text/markdown');
+            await uploadToS3(`${locale}/metadata_${section.id}.json`, metadataJson, 'application/json');
 
             const chapterCount = (section.chapters ?? []).filter(
                 c => c.published_at !== null
@@ -126,7 +152,7 @@ async function main(): Promise<void> {
             totalChapters += chapterCount;
 
             console.log(
-                `  [${locale}/${section.id}] ${section.title}  (${chapterCount} chapters)`
+                `  [${locale}/${section.id}] ${section.title}  (${chapterCount} chapters) – uploaded`
             );
         }
 

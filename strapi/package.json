@@ -9,7 +9,10 @@
     "dev": "nodemon --watch '**/*.ts' --exec ts-node app.ts",
     "fetch-content": "ts-node fetch-content.ts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "minio": "^8.0.7",
+    "dotenv": "^17.4.2"
+  },
   "devDependencies": {
     "@types/node": "^25.6.0",
     "typescript": "^6.0.3",
