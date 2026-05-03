@@ -25,6 +25,7 @@ docker run --rm \
   -e S3_PREFIX=ragflow \
   -e S3_ACCESS_KEY_ID=your-access-key \
   -e S3_SECRET_ACCESS_KEY=your-secret-key \
+  -e STRAPI_BASE_URL=https://api.thilo.scouts.ch \
   strapi-ragflow-adapter
 ```
 

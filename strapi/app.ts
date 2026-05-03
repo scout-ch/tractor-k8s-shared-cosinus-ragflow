@@ -2,6 +2,7 @@ import 'dotenv/config';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Minio from 'minio';
+import type { Chapter, Section } from './types';
 
 const SUPPORTED_LOCALES = ['de', 'fr', 'it'];
 const BASE_URL = process.env.STRAPI_BASE_URL ?? 'http://localhost:1337/api';
@@ -24,45 +25,6 @@ async function uploadToS3(key: string, body: string, contentType: string): Promi
     const fullKey = S3_PREFIX ? `${S3_PREFIX}/${key}` : key;
     const buf = Buffer.from(body, 'utf8');
     await s3.putObject(S3_BUCKET, fullKey, buf, buf.length, { 'Content-Type': contentType });
-}
-
-interface Chapter {
-    id: number;
-    title: string;
-    content: string | null;
-    slug: string;
-    slug_with_section: string;
-    sorting: number | null;
-    menu_name: string;
-    locale: string;
-    published_at: string | null;
-    created_at: string;
-    updated_at: string;
-    line_height: unknown;
-    responsible: unknown[];
-    icon: unknown;
-    link: unknown;
-    section: number;
-    [key: string]: unknown;
-}
-
-interface Section {
-    id: number;
-    title: string;
-    content: string | null;
-    slug: string;
-    sorting: number | null;
-    menu_name: string;
-    locale: string;
-    published_at: string | null;
-    created_at: string;
-    updated_at: string;
-    color_primary: string | null;
-    color_primary_light: string | null;
-    icon: unknown;
-    localizations: unknown[];
-    chapters: Chapter[];
-    [key: string]: unknown;
 }
 
 async function fetchSections(locale: string): Promise<Section[]> {
