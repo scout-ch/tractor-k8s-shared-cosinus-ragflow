@@ -61,8 +61,11 @@ The helm chart was taken and adapted from [the RAGFlow repository](https://githu
 
 Command used for initial installation:
 ```bash
-# ... create a values.yaml with only the values part of fluxcd/ragflow.yaml and insert the secret values referenced in valuesFrom.*.targetPath as literal strings
+# create a values.yaml with only the values part of fluxcd/ragflow.yaml and insert the secret values referenced in valuesFrom.*.targetPath as literal strings
 helm upgrade --install --namespace "cosinus-ragflow" ragflow ./helm -f values.yaml
+# To create a superuser account, execute the following command in a shell in the ragflow container:
+python3 -c "from common import settings; from admin.server.auth import init_default_admin; settings.PARSERS='naive:General,qa:Q&A,resume:Resume,manual:Manual,table:Table,paper:Paper,book:Book,laws:Laws,presentation:Presentation,picture:Picture,one:One,audio:Audio,email:Email,tag:Tag'; init_default_admin()"
+# Then, log in with admin@ragflow.io / admin and change the password.
 ```
 
 ## Why RAGFlow?
