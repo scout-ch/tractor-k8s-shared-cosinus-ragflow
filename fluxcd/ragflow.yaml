@@ -73,5 +73,3 @@ spec:
       enabled: true
       ingress:
         host: mcp.rag.pfadi.ai
-    nodeSelector:
-      kaas.infomaniak.cloud/instance-pool: pck-8kxhclv-pm8
