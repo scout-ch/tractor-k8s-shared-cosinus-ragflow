@@ -8,7 +8,7 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
 - [x] Set up deployment again, this time using fluxcd
 - [x] Update ragflow to 0.24
 - [x] Set up pod for datasync worker
-- [ ] Update ragflow to 0.26
+- [x] Update ragflow to 0.26
 - [ ] MiData login (currently, the MiData test instance is used, waiting for approval of a production OAuth app; and also, OIDC login is [broken](https://github.com/infiniflow/ragflow/issues/12892) in ragflow 0.24.0)
 - [ ] Add data sources
   - [ ] All cudesch content from cudesch.scout.ch
