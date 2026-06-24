@@ -37,7 +37,14 @@ spec:
         imagePullPolicy: {{ . }}
         {{- end }}
         command:
-          - "./entrypoint.sh"
+          - "/bin/bash"
+          - "-c"
+          - |
+            cp ./entrypoint.sh /tmp/entrypoint-mcp.sh
+            sed -i  '/^ensure_docling$\|^ensure_db_init$/d' /tmp/entrypoint-mcp.sh
+            exec /tmp/entrypoint-mcp.sh "$@"
+          - "--"
+        args:
           - "--disable-webserver"
           - "--disable-taskexecutor"
           - "--disable-datasync"
