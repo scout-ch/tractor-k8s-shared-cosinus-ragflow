@@ -22,9 +22,9 @@ ragflow:
         display_name: MiData
         client_id:
         client_secret:
-        issuer: "https://pbs.puzzle.ch"
+        issuer: "https://db.scout.ch"
         scope: openid email
-        redirect_uri: #"https://hostname/v1/user/oauth/callback/midata"
+        redirect_uri: #"https://hostname/api/v1/auth/oauth/midata/callback"
     postgres:
       name: rag_flow
       user: rag_flow

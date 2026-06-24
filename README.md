@@ -9,7 +9,7 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
 - [x] Update ragflow to 0.24
 - [x] Set up pod for datasync worker
 - [x] Update ragflow to 0.26
-- [ ] MiData login (currently, the MiData test instance is used, waiting for approval of a production OAuth app; and also, OIDC login is [broken](https://github.com/infiniflow/ragflow/issues/12892) in ragflow 0.24.0)
+- [x] MiData login
 - [ ] Add data sources
   - [ ] All cudesch content from cudesch.scout.ch
   - [ ] Feature parity with pfadi.ai/cudesch and replace the Supabase implementation there with calls to RAGFlow

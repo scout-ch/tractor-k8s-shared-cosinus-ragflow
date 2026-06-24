@@ -63,8 +63,8 @@ spec:
       service_conf:
         oauth:
           midata:
-            issuer: https://pbs.puzzle.ch
-            redirect_uri: https://rag.pfadi.ai/v1/user/oauth/callback/midata
+            issuer: https://db.scout.ch
+            redirect_uri: https://rag.pfadi.ai/api/v1/auth/oauth/midata/callback
         postgres:
           host: postgres.tractor.scout.ch
           name: cosinus-ragflow
