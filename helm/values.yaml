@@ -201,6 +201,16 @@ redis:
 
 datasource:
   imageBase: ghcr.io/scout-ch/tractor-k8s-shared-cosinus-ragflow
+  strapi:
+    thilo:
+      baseUrl: https://api.thilo.scouts.ch
+      # Empty defaults to the in-cluster MinIO (its own service address/credentials).
+      s3Endpoint:
+      s3Region: us-east-1
+      s3Bucket: ragflow-thilo
+      s3Prefix:
+      s3AccessKeyId:
+      s3SecretAccessKey:
 
 # This block is for setting up web service ingress. For more information, see:
 # https://kubernetes.io/docs/concepts/services-networking/ingress/

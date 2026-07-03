@@ -19,7 +19,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        image: [cudesch]
+        image: [cudesch, strapi]
     steps:
       - uses: actions/checkout@v5
 
