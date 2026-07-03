@@ -18,6 +18,7 @@ Copy `.env.sample` to `.env` and fill in the values:
 ## Run with Docker
 
 ```sh
+docker build -t strapi-ragflow-adapter .
 docker run --rm \
   -e S3_ENDPOINT=https://fsn1.your-objectstorage.com \
   -e S3_REGION=fsn1 \
