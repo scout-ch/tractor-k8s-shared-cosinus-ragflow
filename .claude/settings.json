@@ -5,6 +5,9 @@
       "Read(.env)",
       "Write(secrets.yml)",
       "Write(.env)"
+    ],
+    "allow": [
+      "Bash(gh api repos*)"
     ]
   }
 }
