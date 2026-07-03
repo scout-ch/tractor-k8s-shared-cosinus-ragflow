@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(secrets.yml)",
+      "Read(.env)",
+      "Write(secrets.yml)",
+      "Write(.env)"
+    ]
+  }
+}
