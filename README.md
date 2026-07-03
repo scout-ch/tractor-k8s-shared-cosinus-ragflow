@@ -10,6 +10,7 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
 - [x] Set up pod for datasync worker
 - [x] Update ragflow to 0.26
 - [x] MiData login
+- [ ] Update ragflow to 0.26.3
 - [ ] Add data sources
   - [ ] All cudesch content from cudesch.scout.ch
   - [ ] Feature parity with pfadi.ai/cudesch and replace the Supabase implementation there with calls to RAGFlow
@@ -18,7 +19,7 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
   - [ ] Anker and other pdfs from the PBS download page
   - [ ] J+S documentation relevant to scouting, if legally allowed
   - [ ] MiData documentation on docu.scout.ch and hitobito.readthedocs.io and github.com/hitobito/hitobito_pbs
-  - [ ] thilo and/or "Pfaditechnik in Wort und Bild"
+  - [ ] thilo (PR #2) and/or "Pfaditechnik in Wort und Bild"
   - [ ] Regional or cantonal documentation
   - [ ] (optional) Cudesch PDFs from issuu that aren't yet on cudesch.scout.ch
 - [ ] Automate document re-indexing when some documentation changes (automatic if using native ragflow data sources)
