@@ -8,6 +8,10 @@ This is a **deployment configuration repo**, not an application codebase. It dep
 
 The instance is explicitly scoped to indexing/search only — it does not host LLM pipelines or agents. External tools (e.g. pfadi.ai) are meant to consume it via MCP.
 
+## Working with the repo
+
+On git push, the application is automatically re-deployed. For this reason, leave all git commit and git push actions to the user - do not commit and push on your own.
+
 ## Repo layout
 
 - `README.md` contains a short description of the repo, setup documentation and a todo list with the next tasks to implement.
