@@ -2,10 +2,14 @@ import 'dotenv/config';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Minio from 'minio';
-import type { Chapter, Section } from './types';
+import type { Section } from './types';
+import { parseV3Response, parseV4Response, StrapiV4Response } from './parse';
 
 const SUPPORTED_LOCALES = ['de', 'fr', 'it'];
 const BASE_URL = process.env.STRAPI_BASE_URL ?? 'http://localhost:1337/api';
+// v3: legacy Strapi (thilo) - flat array response, auto-populated relations, `_locale` param.
+// v4: modern Strapi (hering) - `{data: [...]}` response, explicit `populate`/`fields`, `locale` param.
+const API_VERSION = process.env.STRAPI_API_VERSION ?? 'v4';
 const OUTPUT_DIR = path.join(__dirname, 'output');
 
 const S3_BUCKET = process.env.S3_BUCKET!;
@@ -27,13 +31,40 @@ async function uploadToS3(key: string, body: string, contentType: string): Promi
     await s3.putObject(S3_BUCKET, fullKey, buf, buf.length, { 'Content-Type': contentType });
 }
 
-async function fetchSections(locale: string): Promise<Section[]> {
+async function fetchSectionsV3(locale: string): Promise<Section[]> {
     const url = `${BASE_URL}/sections?_locale=${locale}`;
+    console.log(`\nFetching ${url} …`);
     const res = await fetch(url);
     if (!res.ok) {
         throw new Error(`HTTP ${res.status} fetching ${url}`);
     }
-    return res.json() as Promise<Section[]>;
+    return parseV3Response(await res.json());
+}
+
+const V4_QUERY =
+    'populate[chapters][fields][0]=title&' +
+    'populate[chapters][fields][1]=content&' +
+    'populate[chapters][fields][2]=menuName&' +
+    'populate[chapters][populate][responsible][fields][0]=name&' +
+    'populate[chapters][populate][responsible][fields][1]=abbreviation&' +
+    'fields[0]=title&' +
+    'fields[1]=menuName&' +
+    'fields[2]=createdAt&' +
+    'fields[3]=updatedAt&' +
+    'status=published';
+
+async function fetchSectionsV4(locale: string): Promise<Section[]> {
+    const url = `${BASE_URL}/sections?${V4_QUERY}&locale=${locale}`;
+    console.log(`\nFetching ${url} …`);
+    const res = await fetch(url);
+    if (!res.ok) {
+        throw new Error(`HTTP ${res.status} fetching ${url}`);
+    }
+    return parseV4Response(await res.json() as StrapiV4Response);
+}
+
+function fetchSections(locale: string): Promise<Section[]> {
+    return API_VERSION === 'v4' ? fetchSectionsV4(locale) : fetchSectionsV3(locale);
 }
 
 /** Build the YAML frontmatter block with RAG-relevant section metadata. */
@@ -49,8 +80,14 @@ function buildFrontmatter(section: Section): string {
     return lines.join('\n');
 }
 
+const RESPONSIBLE_LABELS: Record<string, string> = {
+    de: 'Verantwortlich',
+    fr: 'Responsable',
+    it: 'Responsabile',
+};
+
 /** Build the markdown document for a section (frontmatter + intro + all chapters). */
-function buildMarkdown(section: Section): string {
+function buildMarkdown(section: Section, locale: string): string {
     const lines: string[] = [];
 
     lines.push(buildFrontmatter(section));
@@ -73,6 +110,12 @@ function buildMarkdown(section: Section): string {
             lines.push(chapter.content.trim());
             lines.push('');
         }
+        if (chapter.responsible && chapter.responsible.length > 0) {
+            const names = chapter.responsible.map(r => `${r.name} (${r.abbreviation})`).join(', ');
+            const label = RESPONSIBLE_LABELS[locale] ?? 'Responsible';
+            lines.push(`**${label}:** ${names}`);
+            lines.push('');
+        }
     }
 
     return lines.join('\n');
@@ -83,8 +126,6 @@ async function main(): Promise<void> {
     let grandTotalChapters = 0;
 
     for (const locale of SUPPORTED_LOCALES) {
-        const url = `${BASE_URL}/sections?_locale=${locale}`;
-        console.log(`\nFetching ${url} …`);
         const sections = await fetchSections(locale);
 
         const published = sections.filter(s => s.published_at !== null);
@@ -98,7 +139,7 @@ async function main(): Promise<void> {
         for (const section of published) {
             const mdPath = path.join(localeDir, `${section.slug}.md`);
 
-            const markdown = buildMarkdown(section);
+            const markdown = buildMarkdown(section, locale);
             fs.writeFileSync(mdPath, markdown, 'utf8');
 
             // Upload to S3

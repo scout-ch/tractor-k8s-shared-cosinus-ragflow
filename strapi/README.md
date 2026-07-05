@@ -1,6 +1,6 @@
 # strapi-ragflow-adapter
 
-Fetches published sections and chapters from the Thilo Scouts Strapi API (all supported locales: `de`, `fr`, `it`), writes each section as a Markdown file with RAG-relevant metadata in its YAML frontmatter, and uploads it to an S3-compatible object store.
+Fetches published sections and chapters from a Strapi API (all supported locales: `de`, `fr`, `it`), writes each section as a Markdown file with RAG-relevant metadata in its YAML frontmatter, and uploads it to an S3-compatible object store. Used for both the Thilo Scouts and Hering Strapi instances.
 
 ## Configuration
 
@@ -14,6 +14,8 @@ Copy `.env.sample` to `.env` and fill in the values:
 | `S3_PREFIX` | Optional key prefix inside the bucket |
 | `S3_ACCESS_KEY_ID` | Access key |
 | `S3_SECRET_ACCESS_KEY` | Secret key |
+| `STRAPI_BASE_URL` | Base URL of the Strapi REST API |
+| `STRAPI_API_VERSION` | `v4` (default, e.g. Hering - `{data: [...]}` response, no `slug` field so one is derived from `menuName`) or `v3` (e.g. Thilo - flat response, auto-populated relations) |
 
 ## Run with Docker
 

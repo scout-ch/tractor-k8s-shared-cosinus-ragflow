@@ -210,6 +210,7 @@ datasource:
   strapi:
     thilo:
       baseUrl: https://api.thilo.scouts.ch
+      apiVersion: v3
       schedule: "45 * * * *"
       # Empty defaults to the in-cluster MinIO (its own service address/credentials).
       s3Endpoint:

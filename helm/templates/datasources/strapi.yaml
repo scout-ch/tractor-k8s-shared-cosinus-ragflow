@@ -46,6 +46,8 @@ spec:
               env:
                 - name: STRAPI_BASE_URL
                   value: {{ $src.baseUrl | quote }}
+                - name: STRAPI_API_VERSION
+                  value: {{ $src.apiVersion | default "v4" | quote }}
                 - name: S3_ENDPOINT
                   value: {{ $src.s3Endpoint | default (printf "http://%s-minio:9000" (include "ragflow.fullname" $)) | quote }}
                 - name: S3_REGION
