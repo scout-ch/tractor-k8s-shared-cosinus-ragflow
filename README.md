@@ -19,9 +19,10 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
     - [x] Move relevant metadata from sidecar json files into frontmatter, stop syncing metadata json files
     - [x] Name markdown files according to content
     - [x] Nest saved markdown files on S3 inside directories per language
+    - [ ] Add source_document identifier as metadata automatically
     - [ ] Construct a source link for each markdown document using a configurable link template with placeholders
     - [ ] Download images and get them imported into ragflow
-  - [ ] hering.scout.ch (Strapi)
+  - [x] hering.scout.ch (Strapi)
   - [ ] Anker and other pdfs from the PBS download page
   - [ ] J+S documentation relevant to scouting, if legally allowed
   - [ ] MiData documentation on docu.scout.ch and hitobito.readthedocs.io and github.com/hitobito/hitobito_pbs
