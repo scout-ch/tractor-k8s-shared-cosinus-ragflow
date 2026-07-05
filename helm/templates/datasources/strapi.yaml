@@ -8,7 +8,7 @@ metadata:
     {{- include "ragflow.labels" $ | nindent 4 }}
     app.kubernetes.io/component: ragflow
 spec:
-  schedule: "45 * * * *"
+  schedule: {{ $src.schedule | default "45 * * * *" | quote }}
   jobTemplate:
     spec:
       ttlSecondsAfterFinished: 7200
