@@ -12,7 +12,7 @@ spec:
     matchLabels:
       {{- include "ragflow.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: datasync
-  {{- with .Values.ragflow.deployment.strategy }}
+  {{- with .Values.ragflow.datasync.deployment.strategy }}
   strategy:
     {{- . | toYaml | nindent 4 }}
   {{- end }}

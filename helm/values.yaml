@@ -62,6 +62,9 @@ ragflow:
         cpu: "800m"
   taskexecutor:
     deployment:
+      strategy:
+        type: Recreate
+        rollingUpdate: null
       resources:
         requests:
           memory: "3Gi"
@@ -71,6 +74,9 @@ ragflow:
           cpu: "1000m"
   datasync:
     deployment:
+      strategy:
+        type: Recreate
+        rollingUpdate: null
       resources:
         requests:
           memory: "1Gi"
