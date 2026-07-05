@@ -36,10 +36,24 @@ async function fetchSections(locale: string): Promise<Section[]> {
     return res.json() as Promise<Section[]>;
 }
 
-/** Build the markdown document for a section (intro + all chapters). */
+/** Build the YAML frontmatter block with RAG-relevant section metadata. */
+function buildFrontmatter(section: Section): string {
+    const lines = [
+        '---',
+        `title: ${JSON.stringify(section.title)}`,
+        `created_at: ${JSON.stringify(section.created_at)}`,
+        `updated_at: ${JSON.stringify(section.updated_at)}`,
+        '---',
+        '',
+    ];
+    return lines.join('\n');
+}
+
+/** Build the markdown document for a section (frontmatter + intro + all chapters). */
 function buildMarkdown(section: Section): string {
     const lines: string[] = [];
 
+    lines.push(buildFrontmatter(section));
     lines.push(`# ${section.title}`);
     lines.push('');
 
@@ -64,18 +78,6 @@ function buildMarkdown(section: Section): string {
     return lines.join('\n');
 }
 
-/** Build the metadata object – every field except `content` for both section and chapters. */
-function buildMetadata(section: Section): object {
-    const { content: _sc, chapters, ...sectionMeta } = section;
-
-    const chaptersMeta = (chapters ?? []).map(chapter => {
-        const { content: _cc, ...chapterMeta } = chapter;
-        return chapterMeta;
-    });
-
-    return { ...sectionMeta, chapters: chaptersMeta };
-}
-
 async function main(): Promise<void> {
     let grandTotalSections = 0;
     let grandTotalChapters = 0;
@@ -94,19 +96,13 @@ async function main(): Promise<void> {
         let totalChapters = 0;
 
         for (const section of published) {
-            const mdPath = path.join(localeDir, `${section.id}.md`);
-            const metaPath = path.join(localeDir, `metadata_${section.id}.json`);
+            const mdPath = path.join(localeDir, `${section.slug}.md`);
 
             const markdown = buildMarkdown(section);
             fs.writeFileSync(mdPath, markdown, 'utf8');
 
-            const metadataObj = buildMetadata(section);
-            const metadataJson = JSON.stringify(metadataObj, null, 2);
-            fs.writeFileSync(metaPath, metadataJson, 'utf8');
-
             // Upload to S3
-            await uploadToS3(`${locale}/${section.id}.md`, markdown, 'text/markdown');
-            await uploadToS3(`${locale}/metadata_${section.id}.json`, metadataJson, 'application/json');
+            await uploadToS3(`${locale}/${section.slug}.md`, markdown, 'text/markdown');
 
             const chapterCount = (section.chapters ?? []).filter(
                 c => c.published_at !== null
@@ -114,7 +110,7 @@ async function main(): Promise<void> {
             totalChapters += chapterCount;
 
             console.log(
-                `  [${locale}/${section.id}] ${section.title}  (${chapterCount} chapters) – uploaded`
+                `  [${locale}/${section.slug}] ${section.title}  (${chapterCount} chapters) – uploaded`
             );
         }
 

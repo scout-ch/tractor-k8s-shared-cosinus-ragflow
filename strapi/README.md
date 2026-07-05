@@ -1,6 +1,6 @@
 # strapi-ragflow-adapter
 
-Fetches published sections and chapters from the Thilo Scouts Strapi API (all supported locales: `de`, `fr`, `it`), writes each section as a Markdown file plus a JSON metadata file, and uploads both to an S3-compatible object store.
+Fetches published sections and chapters from the Thilo Scouts Strapi API (all supported locales: `de`, `fr`, `it`), writes each section as a Markdown file with RAG-relevant metadata in its YAML frontmatter, and uploads it to an S3-compatible object store.
 
 ## Configuration
 

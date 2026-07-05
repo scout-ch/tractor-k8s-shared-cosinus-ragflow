@@ -1,0 +1,26 @@
+name: Test
+
+on:
+  push:
+    paths:
+      - "strapi/**"
+  pull_request:
+    paths:
+      - "strapi/**"
+
+jobs:
+  strapi:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: strapi
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - run: npm test

@@ -7,7 +7,8 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "dev": "nodemon --watch '**/*.ts' --exec ts-node app.ts",
-    "fetch-content": "ts-node fetch-content.ts"
+    "fetch-content": "ts-node fetch-content.ts",
+    "test": "tsc --noEmit && ts-node frontmatter.check.ts"
   },
   "dependencies": {
     "minio": "^8.0.7",

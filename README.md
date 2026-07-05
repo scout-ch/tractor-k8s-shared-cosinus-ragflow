@@ -16,6 +16,11 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
   - [ ] Feature parity with pfadi.ai/cudesch and replace the Supabase implementation there with calls to RAGFlow
   - [ ] PDF brochures about education courses (used in Topkurs)
   - [x] thilo (Strapi)
+    - [x] Move relevant metadata from sidecar json files into frontmatter, stop syncing metadata json files
+    - [x] Name markdown files according to content
+    - [x] Nest saved markdown files on S3 inside directories per language
+    - [ ] Construct a source link for each markdown document using a configurable link template with placeholders
+    - [ ] Download images and get them imported into ragflow
   - [ ] hering.scout.ch (Strapi)
   - [ ] Anker and other pdfs from the PBS download page
   - [ ] J+S documentation relevant to scouting, if legally allowed
