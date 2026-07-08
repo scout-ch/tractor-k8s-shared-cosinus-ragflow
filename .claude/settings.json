@@ -9,5 +9,6 @@
     "allow": [
       "Bash(gh api repos*)"
     ]
-  }
+  },
+  "plansDirectory": "./.claude/plans"
 }

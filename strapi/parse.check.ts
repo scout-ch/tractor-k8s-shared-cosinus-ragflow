@@ -39,6 +39,7 @@ const v4Fixture = {
         {
             title: 'A. Vorbereitung der Lagersaison',
             menuName: 'Vorbereitung',
+            documentId: 'vtc4d0a4bh1448bz432obmln',
             createdAt: '2025-08-17T19:16:37.685Z',
             updatedAt: '2025-08-23T17:20:14.365Z',
             chapters: [
@@ -52,6 +53,7 @@ const v4Fixture = {
         {
             title: 'E. Administration des participant·e·s',
             menuName: 'Administration des participant·e·s',
+            documentId: 'abc123differentid',
             createdAt: '2025-08-17T19:17:02.686Z',
             updatedAt: '2025-08-23T22:47:59.524Z',
             chapters: [],
@@ -64,6 +66,7 @@ assert.strictEqual(v4Result.length, 2, 'must map every section');
 
 const [vorbereitung, administration] = v4Result;
 assert.strictEqual(vorbereitung.slug, 'vorbereitung', 'slug must be derived from menuName');
+assert.strictEqual(vorbereitung.document_id, 'vtc4d0a4bh1448bz432obmln', 'documentId must pass through as document_id');
 assert.strictEqual(vorbereitung.content, null, 'v4 sections have no content field');
 assert.strictEqual(vorbereitung.published_at, vorbereitung.created_at, 'published_at must be non-null (server already filtered)');
 assert.strictEqual(vorbereitung.chapters[0].responsible?.[0].abbreviation, 'LL', 'responsible must pass through');

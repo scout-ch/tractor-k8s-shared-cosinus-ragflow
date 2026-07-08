@@ -12,6 +12,9 @@ const BASE_URL = process.env.STRAPI_BASE_URL ?? 'http://localhost:1337/api';
 const API_VERSION = process.env.STRAPI_API_VERSION ?? 'v4';
 const OUTPUT_DIR = path.join(__dirname, 'output');
 
+const SOURCE_DOCUMENT = process.env.SOURCE_DOCUMENT!;
+const SOURCE_URL_TEMPLATE = process.env.SOURCE_URL_TEMPLATE!;
+
 const S3_BUCKET = process.env.S3_BUCKET!;
 const S3_PREFIX = process.env.S3_PREFIX ?? '';
 
@@ -67,13 +70,21 @@ function fetchSections(locale: string): Promise<Section[]> {
     return API_VERSION === 'v4' ? fetchSectionsV4(locale) : fetchSectionsV3(locale);
 }
 
-/** Build the YAML frontmatter block with RAG-relevant section metadata. */
-function buildFrontmatter(section: Section): string {
+function buildSourceUrl(section: Section, locale: string): string {
+    return SOURCE_URL_TEMPLATE
+        .replace('{slug}', section.slug)
+        .replace('{locale}', locale)
+        .replace('{document_id}', section.document_id ?? '');
+}
+
+function buildFrontmatter(section: Section, sourceUrl: string): string {
     const lines = [
         '---',
         `title: ${JSON.stringify(section.title)}`,
         `created_at: ${JSON.stringify(section.created_at)}`,
         `updated_at: ${JSON.stringify(section.updated_at)}`,
+        `source_document: ${JSON.stringify(SOURCE_DOCUMENT)}`,
+        `source_url: ${JSON.stringify(sourceUrl)}`,
         '---',
         '',
     ];
@@ -86,11 +97,11 @@ const RESPONSIBLE_LABELS: Record<string, string> = {
     it: 'Responsabile',
 };
 
-/** Build the markdown document for a section (frontmatter + intro + all chapters). */
 function buildMarkdown(section: Section, locale: string): string {
     const lines: string[] = [];
 
-    lines.push(buildFrontmatter(section));
+    const sourceUrl = buildSourceUrl(section, locale);
+    lines.push(buildFrontmatter(section, sourceUrl));
     lines.push(`# ${section.title}`);
     lines.push('');
 

@@ -211,6 +211,7 @@ datasource:
     thilo:
       baseUrl: https://api.thilo.scouts.ch
       apiVersion: v3
+      sourceUrlTemplate: https://thilo.scouts.ch/{slug}
       schedule: "45 * * * *"
       # Empty defaults to the in-cluster MinIO (its own service address/credentials).
       s3Endpoint:
@@ -221,6 +222,7 @@ datasource:
       s3SecretAccessKey:
     hering:
       baseUrl: https://hering-api.tractor.scout.ch/api
+      sourceUrlTemplate: https://hering.scout.ch/{locale}/{document_id}
       schedule: "15 * * * *"
       s3Endpoint:
       s3Region: us-east-1

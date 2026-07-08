@@ -18,4 +18,5 @@ export interface Section {
     created_at: string;
     updated_at: string;
     chapters: Chapter[];
+    document_id?: string;
 }

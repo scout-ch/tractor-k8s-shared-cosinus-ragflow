@@ -17,10 +17,21 @@ On git push, the application is automatically re-deployed. For this reason, leav
 - `README.md` contains a short description of the repo, setup documentation and a todo list with the next tasks to implement.
 - `helm/` — Helm chart deploying RAGFlow and its dependencies (Postgres via external host, Elasticsearch, MinIO, Redis, an MCP server, a datasync worker, and per-source CronJobs under `helm/templates/datasources/`). Adapted from the [upstream RAGFlow helm chart](https://github.com/infiniflow/ragflow/tree/main/helm).
 - `fluxcd/ragflow.yaml` — the `HelmRelease` FluxCD reconciles in production, pulling in real secrets via `valuesFrom` and overriding the chart defaults in `helm/values.yaml`. Deployment happens automatically on push to `main` via [tractor-k8s-shared](https://github.com/scout-ch/tractor-k8s-shared) — there is no manual deploy step for normal changes.
+- `strapi/` — a TypeScript adapter, containerized and run as the `thilo` and `hering` datasource CronJobs (`helm/templates/datasources/strapi.yaml`); see "Working with the strapi adapter" below.
 - `cudesch/` — a small Node container (`app.js` + `Dockerfile`) that acts as one of the datasource CronJobs (`helm/templates/datasources/cudesch.yaml`), meant to sync cudesch.scout.ch content into RAGFlow.
 - `.github/workflows/build-images.yml` — builds and pushes the `cudesch` datasource image to GHCR on push to `main`/tags and nightly; add new entries to the `matrix.image` list when adding datasource containers.
 - `secrets.example.yml` / `secrets.yml` — Kubernetes `Secret` manifests consumed by the FluxCD `HelmRelease` via `valuesFrom`. `secrets.yml` and `.env` are gitignored and must be created locally (`cp secrets.example.yml secrets.yml`) before first install.
 - `pbs-rag-comparison.ods` — the evaluation spreadsheet documenting why RAGFlow was chosen over alternatives (see README "Why RAGFlow?").
+
+## Working with the strapi adapter
+
+`strapi/` is the single adapter behind both the `thilo` and `hering` CronJobs (`helm/templates/datasources/strapi.yaml`, looped over `helm/values.yaml`'s `datasource.strapi` map). Key facts that aren't obvious from a first read:
+
+- thilo uses legacy Strapi v3 (flat array response, `slug` field present); hering uses a newer flattened v4-style response (`{data: [...]}`, no `slug` — one is derived from `menuName` via `slugify()`). `parse.ts` normalizes both into the same `Section` shape; `API_VERSION` (env `STRAPI_API_VERSION`) picks which parser runs.
+- One markdown file = one Strapi *section*; chapters become `##` headings within that file, not separate documents.
+- Metadata is embedded as YAML frontmatter directly in the `.md` file (`buildFrontmatter` in `app.ts`) — there used to be sidecar `metadata_<id>.json` files, that pattern was removed, don't reintroduce it.
+- Per-source, non-secret config (base URL, API version, source URL template, S3 bucket/prefix) lives in `helm/values.yaml` under `datasource.strapi.<name>`; secrets live in `helm/templates/datasources/strapi-secrets.yaml`.
+- No test framework — `strapi/frontmatter.check.ts` and `strapi/parse.check.ts` are plain `assert`-based self-checks (`npm test` in `strapi/` runs `tsc --noEmit` + both). Update these alongside any change to `buildFrontmatter`/`parse.ts` instead of adding a test runner.
 
 ## Working with the Helm chart
 
@@ -29,6 +40,7 @@ On git push, the application is automatically re-deployed. For this reason, leav
 - The `mcp` and `ragflow`/`datasync`/`taskexecutor` deployments all run from the *same* RAGFlow image but with different `entrypoint.sh` flags (`--disable-webserver`, `--enable-mcpserver`, etc. — see `helm/templates/mcp.yaml` and `helm/templates/datasync.yaml`). When changing container startup behavior, check whether the change needs to apply to all of these variants.
 - New datasources are added as a CronJob under `helm/templates/datasources/`, using the `datasource.imageBase` value as the image prefix and a corresponding image built by `.github/workflows/build-images.yml`.
 - There's no local `helm template`/lint tooling configured in this repo; validate chart changes with `helm template ./helm -f <values-file>` or `helm lint ./helm` if Helm is available locally.
+- Several templates use `required(...)` on secret/config values that are normally supplied via `valuesFrom` in `fluxcd/ragflow.yaml`, not present in `helm/values.yaml` — plain `helm template ./helm -f helm/values.yaml` fails against these. Stub them with `--set` to render locally, e.g.: `--set minio.password=dummy --set ragflow.secret_key=dummy --set redis.password=dummy --set elasticsearch.password=dummy --set minio.accessKey=dummy --set minio.secretKey=dummy --set ragflow.storage.oauth.clientSecret=dummy --set ragflow.ragflowApiKey=dummy --set ingress.host=dummy.example.com`.
 
 ## Secrets and env files
 

@@ -14,6 +14,7 @@ export interface StrapiV4Chapter {
 export interface StrapiV4Section {
     title: string;
     menuName: string;
+    documentId: string;
     createdAt: string;
     updatedAt: string;
     chapters: StrapiV4Chapter[];
@@ -43,6 +44,7 @@ export function parseV4Response(body: StrapiV4Response): Section[] {
         published_at: section.createdAt,
         created_at: section.createdAt,
         updated_at: section.updatedAt,
+        document_id: section.documentId,
         chapters: section.chapters.map(chapter => ({
             title: chapter.title,
             content: chapter.content,
