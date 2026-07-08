@@ -8,7 +8,7 @@ env:
 ragflow:
   image:
     repository: infiniflow/ragflow
-    tag: v0.26.3
+    tag: v0.26.4
     pullPolicy: IfNotPresent
     pullSecrets: []
   secret_key:

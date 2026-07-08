@@ -11,6 +11,7 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
 - [x] Update ragflow to 0.26
 - [x] MiData login
 - [x] Update ragflow to 0.26.3
+- [x] Update ragflow to 0.26.4
 - [ ] Add data sources
   - [ ] All cudesch content from cudesch.scout.ch
   - [ ] Feature parity with pfadi.ai/cudesch and replace the Supabase implementation there with calls to RAGFlow

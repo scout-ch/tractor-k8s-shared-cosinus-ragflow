@@ -27,17 +27,24 @@ these silently.
    breaking change in an intermediate release is easy to miss if you only
    diff against the final tag.
 
-3. **Specifically check for:**
-   - New `ensure_*` functions/services added to `entrypoint.sh`. The sed in
-     `helm/templates/mcp.yaml` strips `ensure_docling`/`ensure_db_init` for
-     the MCP variant — a new function needs the same treatment or it starts
-     an unwanted service there.
+3. **Diff `docker/entrypoint.sh` itself** between current and target tag —
+   release notes don't mention entrypoint refactors. Check for:
+   - New `ensure_*` functions/services. The sed in `helm/templates/mcp.yaml`
+     strips `ensure_docling`/`ensure_db_init` for the MCP variant — a new
+     function needs the same treatment or it starts an unwanted service there.
    - MySQL-only migrations, SQL, or config keys. `helm/templates/ragflow-config.yaml`
      forces `DB_TYPE: postgres`, so anything upstream that only works under
      the MySQL default silently misbehaves here.
    - Renamed/removed `entrypoint.sh` flags (`--disable-webserver`,
      `--enable-mcpserver`, ...) — `ragflow.yaml`, `mcp.yaml`, `datasync.yaml`,
      and `taskexecutor.yaml` each pass a different set.
+   - New `if [[ "$VAR" == ... ]]` gates around a whole service block. An
+     unset var is empty, matches no branch, and the block silently never
+     runs — no error, container just exits 0 shortly after start
+     (CrashLoopBackOff with a clean exit code, no log error to grep for).
+     For every var used in a new condition, confirm it's set to a matching
+     value in `ragflow-config.yaml`/secrets for each of `ragflow.yaml`,
+     `mcp.yaml`, `datasync.yaml`, `taskexecutor.yaml`.
 
 4. **Update `helm/values.yaml`** (`ragflow.image.tag`). `fluxcd/ragflow.yaml`
    has no tag override today, so this is the only place to change.

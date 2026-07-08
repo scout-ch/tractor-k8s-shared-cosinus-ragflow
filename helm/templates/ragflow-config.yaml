@@ -14,6 +14,7 @@ data:
   */}}
   REDIS_HOST: {{ printf "%s-redis-svc.%s.svc" (include "ragflow.fullname" .) .Release.Namespace | quote }}
   DB_TYPE: postgres
+  API_PROXY_SCHEME: python
   MINIO_HOST: {{ printf "%s-minio.%s.svc" (include "ragflow.fullname" .) .Release.Namespace | quote }}
   ES_HOST: {{ printf "%s-es.%s.svc" (include "ragflow.fullname" .) .Release.Namespace | quote }}
   DOC_BULK_SIZE: {{ .Values.ragflow.docBulkSize | quote }}
