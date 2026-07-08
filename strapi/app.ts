@@ -73,7 +73,7 @@ function fetchSections(locale: string): Promise<Section[]> {
 
 function buildSourceUrl(section: Section, locale: string): string {
     return SOURCE_URL_TEMPLATE
-        .replace('{slug}', section.slug)
+        .replace('{slug}', section.slug.toLowerCase())
         .replace('{locale}', locale)
         .replace('{document_id}', section.document_id ?? '');
 }
@@ -151,7 +151,7 @@ async function main(): Promise<void> {
         let totalChapters = 0;
 
         for (const [index, section] of published.entries()) {
-            const filename = `${SOURCE_DOCUMENT}-${index + 1}-${section.slug}.md`;
+            const filename = `${SOURCE_DOCUMENT}-${index + 1}-${section.slug.toLowerCase()}.md`;
             const mdPath = path.join(localeDir, filename);
 
             const markdown = buildMarkdown(section, locale);
