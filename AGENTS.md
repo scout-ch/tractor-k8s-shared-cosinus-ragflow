@@ -18,7 +18,7 @@ On git push, the application is automatically re-deployed. For this reason, leav
 - `helm/` — Helm chart deploying RAGFlow and its dependencies (Postgres via external host, Elasticsearch, MinIO, Redis, an MCP server, a datasync worker, and per-source CronJobs under `helm/templates/datasources/`). Adapted from the [upstream RAGFlow helm chart](https://github.com/infiniflow/ragflow/tree/main/helm).
 - `fluxcd/ragflow.yaml` — the `HelmRelease` FluxCD reconciles in production, pulling in real secrets via `valuesFrom` and overriding the chart defaults in `helm/values.yaml`. Deployment happens automatically on push to `main` via [tractor-k8s-shared](https://github.com/scout-ch/tractor-k8s-shared) — there is no manual deploy step for normal changes.
 - `strapi/` — a TypeScript adapter, containerized and run as the `thilo` and `hering` datasource CronJobs (`helm/templates/datasources/strapi.yaml`); see "Working with the strapi adapter" below.
-- `cudesch/` — a small Node container (`app.js` + `Dockerfile`) that acts as one of the datasource CronJobs (`helm/templates/datasources/cudesch.yaml`), meant to sync cudesch.scout.ch content into RAGFlow.
+- `cudesch/` — a TypeScript adapter, containerized and run as the `cudesch` datasource CronJob (`helm/templates/datasources/cudesch.yaml`), syncing cudesch.scout.ch content into RAGFlow; see "Working with the cudesch adapter" below.
 - `.github/workflows/build-images.yml` — builds and pushes the `cudesch` datasource image to GHCR on push to `main`/tags and nightly; add new entries to the `matrix.image` list when adding datasource containers.
 - `secrets.example.yml` / `secrets.yml` — Kubernetes `Secret` manifests consumed by the FluxCD `HelmRelease` via `valuesFrom`. `secrets.yml` and `.env` are gitignored and must be created locally (`cp secrets.example.yml secrets.yml`) before first install.
 - `pbs-rag-comparison.ods` — the evaluation spreadsheet documenting why RAGFlow was chosen over alternatives (see README "Why RAGFlow?").
@@ -32,6 +32,17 @@ On git push, the application is automatically re-deployed. For this reason, leav
 - Metadata is embedded as YAML frontmatter directly in the `.md` file (`buildFrontmatter` in `app.ts`) — there used to be sidecar `metadata_<id>.json` files, that pattern was removed, don't reintroduce it.
 - Per-source, non-secret config (base URL, API version, source URL template, S3 bucket/prefix) lives in `helm/values.yaml` under `datasource.strapi.<name>`; secrets live in `helm/templates/datasources/strapi-secrets.yaml`.
 - No test framework — `strapi/frontmatter.check.ts` and `strapi/parse.check.ts` are plain `assert`-based self-checks (`npm test` in `strapi/` runs `tsc --noEmit` + both). Update these alongside any change to `buildFrontmatter`/`parse.ts` instead of adding a test runner.
+
+## Working with the cudesch adapter
+
+`cudesch/` syncs the [BookStack](https://www.bookstackapp.com/) instance behind cudesch.scout.ch. Key facts that aren't obvious from a first read:
+
+- cudesch.scout.ch is actually **three separate BookStack instances**, one per locale (`de`/`fr`/`it`), each requiring its own API token (`CUDESCH_API_TOKEN_DE`/`_FR`/`_IT`) — not one multilingual instance behind a locale switch.
+- One markdown file = one BookStack *chapter* or one loose *page* (a page placed directly in a book, not inside any chapter) — unlike strapi, chapters are split into separate documents rather than becoming `##` headings in one file. `bookstack.ts`'s `flattenBook` does this split and filters out draft/template pages.
+- Content comes from BookStack's own `.../export/markdown` endpoint per chapter/page, not reassembled from HTML.
+- Unlike strapi, this is a single datasource, not a map of named sources — `datasource.cudesch` in `helm/values.yaml` is a flat config block, and `helm/templates/datasources/cudesch.yaml`/`cudesch-secrets.yaml` have no `range`.
+- `app.ts`'s `removeStaleObjects` deletes S3 objects from a previous run that the current run no longer produces (diffed against the bucket's locale prefix) — strapi doesn't do this yet, so don't assume its absence there is deliberate.
+- No test framework — `cudesch/bookstack.check.ts` is a plain `assert`-based self-check (`npm test` runs `tsc --noEmit` + it). Update it alongside any change to `bookstack.ts`.
 
 ## Working with the Helm chart
 

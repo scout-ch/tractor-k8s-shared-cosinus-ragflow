@@ -48,6 +48,18 @@ spec:
       name: ragflow-mcp
       valuesKey: apiKey
       targetPath: mcp.ragflowApiKey
+    - kind: Secret
+      name: ragflow-cudesch
+      valuesKey: apiTokenDe
+      targetPath: datasource.cudesch.apiTokenDe
+    - kind: Secret
+      name: ragflow-cudesch
+      valuesKey: apiTokenFr
+      targetPath: datasource.cudesch.apiTokenFr
+    - kind: Secret
+      name: ragflow-cudesch
+      valuesKey: apiTokenIt
+      targetPath: datasource.cudesch.apiTokenIt
   values:
     ingress:
       annotations:

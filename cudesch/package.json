@@ -1,0 +1,22 @@
+{
+  "name": "cudesch-ragflow-adapter",
+  "version": "1.0.0",
+  "description": "RAGFlow Adapter for cudesch.scout.ch",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "dev": "nodemon --watch '**/*.ts' --exec ts-node app.ts",
+    "test": "tsc --noEmit && ts-node bookstack.check.ts"
+  },
+  "dependencies": {
+    "minio": "^8.0.7",
+    "dotenv": "^17.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.3",
+    "ts-node": "^10.9.2",
+    "nodemon": "^3.1.14"
+  }
+}

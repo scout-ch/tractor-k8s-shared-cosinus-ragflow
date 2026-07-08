@@ -7,10 +7,10 @@ metadata:
     {{- include "ragflow.labels" . | nindent 4 }}
     app.kubernetes.io/component: ragflow
 spec:
-  schedule: "30 * * * *"
+  schedule: {{ .Values.datasource.cudesch.schedule | default "0 4 * * *" | quote }}
   jobTemplate:
     spec:
-      ttlSecondsAfterFinished: 7200
+      ttlSecondsAfterFinished: 172800
       backoffLimit: 0
       template:
         spec:
@@ -23,10 +23,41 @@ spec:
               {{- toYaml . | nindent 8 }}
               {{- end }}
           {{- end }}
+          initContainers:
+            - name: ensure-bucket
+              image: minio/mc:latest
+              envFrom:
+                - secretRef:
+                    name: {{ include "ragflow.fullname" . }}-cudesch-datasource-secrets
+              env:
+                - name: S3_ENDPOINT
+                  value: {{ .Values.datasource.cudesch.s3Endpoint | default (printf "http://%s-minio:9000" (include "ragflow.fullname" .)) | quote }}
+                - name: S3_BUCKET
+                  value: {{ .Values.datasource.cudesch.s3Bucket | quote }}
+              command:
+                - sh
+                - -c
+                - mc alias set target "$S3_ENDPOINT" "$S3_ACCESS_KEY_ID" "$S3_SECRET_ACCESS_KEY" && mc mb --ignore-existing "target/$S3_BUCKET"
           containers:
             - name: datasync-cudesch
               image: {{ .Values.datasource.imageBase }}-cudesch
               imagePullPolicy: Always
+              env:
+                - name: CUDESCH_BASE_URL
+                  value: {{ .Values.datasource.cudesch.baseUrl | quote }}
+                - name: SOURCE_DOCUMENT
+                  value: cudesch
+                - name: S3_ENDPOINT
+                  value: {{ .Values.datasource.cudesch.s3Endpoint | default (printf "http://%s-minio:9000" (include "ragflow.fullname" .)) | quote }}
+                - name: S3_REGION
+                  value: {{ .Values.datasource.cudesch.s3Region | quote }}
+                - name: S3_BUCKET
+                  value: {{ .Values.datasource.cudesch.s3Bucket | quote }}
+                - name: S3_PREFIX
+                  value: {{ .Values.datasource.cudesch.s3Prefix | default "" | quote }}
+              envFrom:
+                - secretRef:
+                    name: {{ include "ragflow.fullname" . }}-cudesch-datasource-secrets
 
           {{- with .Values.nodeSelector }}
           nodeSelector:

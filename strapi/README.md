@@ -2,7 +2,7 @@
 
 Fetches published sections and chapters from a Strapi API (all supported locales: `de`, `fr`, `it`), writes each section as a Markdown file with RAG-relevant metadata in its YAML frontmatter, and uploads it to an S3-compatible object store. Used for both the Thilo Scouts and Hering Strapi instances.
 
-## Configuration
+## Configuration for running this adapter standalone
 
 Copy `.env.sample` to `.env` and fill in the values:
 

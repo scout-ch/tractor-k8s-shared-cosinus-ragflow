@@ -13,19 +13,20 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
 - [x] Update ragflow to 0.26.3
 - [x] Update ragflow to 0.26.4
 - [ ] Add data sources
-  - [ ] All cudesch content from cudesch.scout.ch
-  - [ ] Feature parity with pfadi.ai/cudesch and replace the Supabase implementation there with calls to RAGFlow
-  - [ ] PDF brochures about education courses (used in Topkurs)
   - [x] thilo (Strapi)
-    - [x] Markdown contents should match the actual content from the webapp as close as possible, including headings and ordering
-    - [x] Name markdown files according to content
-    - [x] Nest saved markdown files on S3 inside directories per language
-    - [x] Filenames on S3 should start with thilo- or hering- and an ordinal number, to avoid name clashes and to be able to list the files
-    - [x] Add source_document identifier as metadata automatically
-    - [x] Construct a source link for each markdown document using a configurable link template with placeholders
-    - [x] Add tests for the adapter
-    - [ ] Download images and get them imported into ragflow
+      - [x] Markdown contents should match the actual content from the webapp as close as possible, including headings and ordering
+      - [x] Name markdown files according to content
+      - [x] Nest saved markdown files on S3 inside directories per language
+      - [x] Filenames on S3 should start with thilo- or hering- and an ordinal number, to avoid name clashes and to be able to list the files
+      - [x] Add source_document identifier as metadata automatically
+      - [x] Construct a source link for each markdown document using a configurable link template with placeholders
+      - [x] Add tests for the adapter
+      - [ ] Download images and get them imported into ragflow
   - [x] hering.scout.ch (Strapi)
+  - [x] All cudesch content from cudesch.scout.ch
+    - [x] Basic implementation based on the strapi adapter
+    - [ ] Download images and get them imported into ragflow
+  - [ ] PDF brochures about education courses (used in Topkurs)
   - [ ] Anker and other pdfs from the PBS download page
   - [ ] J+S documentation relevant to scouting, if legally allowed
   - [ ] MiData documentation on docu.scout.ch and hitobito.readthedocs.io and github.com/hitobito/hitobito_pbs
