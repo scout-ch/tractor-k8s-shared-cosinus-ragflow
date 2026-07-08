@@ -17,7 +17,7 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
   - [ ] Feature parity with pfadi.ai/cudesch and replace the Supabase implementation there with calls to RAGFlow
   - [ ] PDF brochures about education courses (used in Topkurs)
   - [x] thilo (Strapi)
-    - [x] Move relevant metadata from sidecar json files into frontmatter, stop syncing metadata json files
+    - [x] Markdown contents should match the actual content from the webapp as close as possible, including headings and ordering
     - [x] Name markdown files according to content
     - [x] Nest saved markdown files on S3 inside directories per language
     - [x] Filenames on S3 should start with thilo- or hering- and an ordinal number, to avoid name clashes and to be able to list the files

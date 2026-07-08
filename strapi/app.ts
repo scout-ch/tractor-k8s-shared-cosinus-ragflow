@@ -111,9 +111,9 @@ function buildMarkdown(section: Section, locale: string): string {
         lines.push('');
     }
 
-    const publishedChapters = (section.chapters ?? []).filter(
-        c => c.published_at !== null
-    );
+    const publishedChapters = (section.chapters ?? [])
+        .filter(c => c.published_at !== null)
+        .sort((a, b) => (a.sorting ?? 0) - (b.sorting ?? 0));
 
     for (const chapter of publishedChapters) {
         lines.push(`## ${chapter.title}`);

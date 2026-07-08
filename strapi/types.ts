@@ -8,6 +8,7 @@ export interface Chapter {
     content: string | null;
     published_at: string | null;
     responsible?: Responsible[];
+    sorting?: number;
 }
 
 export interface Section {
