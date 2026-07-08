@@ -54,6 +54,7 @@ const V4_QUERY =
     'fields[1]=menuName&' +
     'fields[2]=createdAt&' +
     'fields[3]=updatedAt&' +
+    'fields[4]=sorting&' +
     'status=published';
 
 async function fetchSectionsV4(locale: string): Promise<Section[]> {
@@ -139,7 +140,9 @@ async function main(): Promise<void> {
     for (const locale of SUPPORTED_LOCALES) {
         const sections = await fetchSections(locale);
 
-        const published = sections.filter(s => s.published_at !== null);
+        const published = sections
+            .filter(s => s.published_at !== null)
+            .sort((a, b) => a.sorting - b.sorting);
         console.log(`[${locale}] Sections total: ${sections.length}, published: ${published.length}`);
 
         const localeDir = path.join(OUTPUT_DIR, locale);
@@ -147,14 +150,15 @@ async function main(): Promise<void> {
 
         let totalChapters = 0;
 
-        for (const section of published) {
-            const mdPath = path.join(localeDir, `${section.slug}.md`);
+        for (const [index, section] of published.entries()) {
+            const filename = `${SOURCE_DOCUMENT}-${index + 1}-${section.slug}.md`;
+            const mdPath = path.join(localeDir, filename);
 
             const markdown = buildMarkdown(section, locale);
             fs.writeFileSync(mdPath, markdown, 'utf8');
 
             // Upload to S3
-            await uploadToS3(`${locale}/${section.slug}.md`, markdown, 'text/markdown');
+            await uploadToS3(`${locale}/${filename}`, markdown, 'text/markdown');
 
             const chapterCount = (section.chapters ?? []).filter(
                 c => c.published_at !== null

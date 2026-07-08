@@ -22,6 +22,7 @@ const v3Fixture: Section[] = [
         published_at: '2024-01-01T00:00:00.000Z',
         created_at: '2024-01-01T00:00:00.000Z',
         updated_at: '2024-01-02T00:00:00.000Z',
+        sorting: 1,
         chapters: [
             { title: 'Kapitel 1', content: 'Chapter body', published_at: '2024-01-01T00:00:00.000Z' },
             { title: 'Kapitel 2 (draft)', content: 'Draft body', published_at: null },
@@ -42,6 +43,7 @@ const v4Fixture = {
             documentId: 'vtc4d0a4bh1448bz432obmln',
             createdAt: '2025-08-17T19:16:37.685Z',
             updatedAt: '2025-08-23T17:20:14.365Z',
+            sorting: 1,
             chapters: [
                 {
                     title: 'Rahmenbedingungen für Lager',
@@ -56,6 +58,7 @@ const v4Fixture = {
             documentId: 'abc123differentid',
             createdAt: '2025-08-17T19:17:02.686Z',
             updatedAt: '2025-08-23T22:47:59.524Z',
+            sorting: 2,
             chapters: [],
         },
     ],

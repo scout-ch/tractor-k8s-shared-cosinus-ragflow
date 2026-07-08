@@ -19,4 +19,5 @@ export interface Section {
     updated_at: string;
     chapters: Chapter[];
     document_id?: string;
+    sorting: number;
 }
