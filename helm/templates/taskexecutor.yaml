@@ -24,6 +24,7 @@ spec:
       annotations:
         checksum/ragflow-secrets: {{ include (print $.Template.BasePath "/ragflow-secrets.yaml") . | sha256sum }}
         checksum/ragflow-config: {{ include (print $.Template.BasePath "/ragflow-config.yaml") . | sha256sum }}
+        checksum/vision-prompts: {{ include (print $.Template.BasePath "/vision-prompts-config.yaml") . | sha256sum }}
     spec:
       # Kubernetes injects service link environment variables which accidentally match the name of variables
       # expected inside the mcp server script. So we disable this legacy Kubernetes behaviour here.
@@ -58,6 +59,12 @@ spec:
             subPath: llm_factories.json
             name: service-conf-volume
           {{- end }}
+          - mountPath: /ragflow/rag/prompts/vision_llm_figure_describe_prompt.md
+            subPath: vision_llm_figure_describe_prompt.md
+            name: vision-prompts-volume
+          - mountPath: /ragflow/rag/prompts/vision_llm_figure_describe_prompt_with_context.md
+            subPath: vision_llm_figure_describe_prompt_with_context.md
+            name: vision-prompts-volume
         envFrom:
           - secretRef:
               name: {{ include "ragflow.fullname" . }}-ragflow-secrets
@@ -71,6 +78,9 @@ spec:
         - name: service-conf-volume
           configMap:
             name: {{ include "ragflow.fullname" . }}-service-config
+        - name: vision-prompts-volume
+          configMap:
+            name: {{ include "ragflow.fullname" . }}-vision-prompts
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- . | toYaml | nindent 8 }}

@@ -64,7 +64,6 @@ ragflow:
     deployment:
       strategy:
         type: Recreate
-        rollingUpdate: null
       resources:
         requests:
           memory: "3Gi"
@@ -76,7 +75,6 @@ ragflow:
     deployment:
       strategy:
         type: Recreate
-        rollingUpdate: null
       resources:
         requests:
           memory: "1Gi"

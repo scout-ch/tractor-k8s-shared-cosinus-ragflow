@@ -46,10 +46,20 @@ these silently.
      value in `ragflow-config.yaml`/secrets for each of `ragflow.yaml`,
      `mcp.yaml`, `datasync.yaml`, `taskexecutor.yaml`.
 
-4. **Update `helm/values.yaml`** (`ragflow.image.tag`). `fluxcd/ragflow.yaml`
+4. **Re-sync overridden files** in `helm/overrides/`. These are pinned copies
+   of files baked into the image (currently the two
+   `vision_llm_figure_describe_prompt*.md` prompts), `subPath`-mounted over the
+   originals — they don't auto-update with the image. Diff each against its
+   upstream counterpart at the target tag (`rag/prompts/*.md`); if upstream
+   changed, re-apply our edits (the `## LANGUAGE` section) on top of the new
+   upstream text. Watch especially for renamed/removed jinja variables like
+   `{{ context_above }}`/`{{ context_below }}` — a stale override would drop
+   new context or break rendering silently.
+
+5. **Update `helm/values.yaml`** (`ragflow.image.tag`). `fluxcd/ragflow.yaml`
    has no tag override today, so this is the only place to change.
 
-5. **Update the README todo checklist** (`- [ ] Update ragflow to X.Y.Z`).
+6. **Update the README todo checklist** (`- [ ] Update ragflow to X.Y.Z`).
 
-6. **Validate** with `helm template ./helm -f <values-file>` if Helm is
+7. **Validate** with `helm template ./helm -f <values-file>` if Helm is
    available locally.

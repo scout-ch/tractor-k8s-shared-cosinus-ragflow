@@ -22,11 +22,8 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
       - [x] Construct a source link for each markdown document using a configurable link template with placeholders
       - [x] Obsolete files should be automatically cleaned up from the S3 storage
       - [x] Add tests for the adapter
-      - [ ] Download images and get them imported into ragflow
   - [x] hering.scout.ch (Strapi)
   - [x] All cudesch content from cudesch.scout.ch
-    - [x] Basic implementation based on the strapi adapter
-    - [ ] Download images and get them imported into ragflow
   - [ ] PDF brochures about education courses (used in Topkurs)
   - [ ] Anker and other pdfs from the PBS download page
   - [ ] J+S documentation relevant to scouting, if legally allowed
@@ -80,6 +77,15 @@ helm upgrade --install --namespace "cosinus-ragflow" ragflow ./helm -f values.ya
 python3 -c "from common import settings; from admin.server.auth import init_default_admin; settings.PARSERS='naive:General,qa:Q&A,resume:Resume,manual:Manual,table:Table,paper:Paper,book:Book,laws:Laws,presentation:Presentation,picture:Picture,one:One,audio:Audio,email:Email,tag:Tag'; init_default_admin()"
 # Then, log in with admin@ragflow.io / admin and change the password.
 ```
+
+## Manual setup in the RAGFlow UI
+
+- Change the default admin password immediately
+- Add under Model Providers the credentials for LLM (required, e.g. OpenAI ), Embedding (required, e.g. OpenAI) and VLM (necessary for image descriptions in markdown sources, e.g. Gemini) and set them as default models in these categories. Currently in use: gpt-5.5 for LLM, text-embedding-ada-002 for Embedding and gemini-2.5-flash for VLM.
+- Under Data Sources, manually add S3 data sources for each language and adapter. Bucket name is `ragflow-<adapter name>`, Region `us-east-1`, prefix `de/` etc., Mode `S3 Compatible`, AWS Access Key ID `rag_flow`, AWS Secret Access Key is the minio password from secrets.yml, Addressing Style `Path Style`, Endpoint URL `http://ragflow-minio:9000`, Sync deleted files `yes`. Then, edit each adapter and set Prune Freq `30` minutes, Refresh Freq `30` minutes.
+- Create one dataset per language (e.g. "PBS RAG DE")
+- Under the dataset's configuration, set the language, set Image & table context window to `100` and connect the data sources of the matching language.
+- Also in configuration, activate Auto metadata in Settings activate the Built-in update_time and file_name. Under Generation, add `title`, `source_document` and `source_url` with description like `The title of the content. In markdown files, this must be copied verbatim from the "title" in the frontmatter.`, plus a `locale` field with `Always output "de" in this knowledge base.` and restricted to the dataset's language.
 
 ## Why RAGFlow?
 
