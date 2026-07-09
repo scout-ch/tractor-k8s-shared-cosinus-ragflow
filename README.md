@@ -20,6 +20,7 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
       - [x] Filenames on S3 should start with thilo- or hering- and an ordinal number, to avoid name clashes and to be able to list the files
       - [x] Add source_document identifier as metadata automatically
       - [x] Construct a source link for each markdown document using a configurable link template with placeholders
+      - [x] Obsolete files should be automatically cleaned up from the S3 storage
       - [x] Add tests for the adapter
       - [ ] Download images and get them imported into ragflow
   - [x] hering.scout.ch (Strapi)

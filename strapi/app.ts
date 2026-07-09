@@ -29,7 +29,7 @@ const s3 = new Minio.Client({
     secretKey: process.env.S3_SECRET_ACCESS_KEY!,
 });
 
-async function uploadToS3(key: string, body: string, contentType: string): Promise<void> {
+async function uploadToS3(key: string, body: string, contentType: string): Promise<string> {
     const fullKey = S3_PREFIX ? `${S3_PREFIX}/${key}` : key;
     const buf = Buffer.from(body, 'utf8');
     const md5 = md5Hex(buf);
@@ -43,10 +43,25 @@ async function uploadToS3(key: string, body: string, contentType: string): Promi
 
     if (shouldSkipUpload(md5, existingEtag)) {
         console.log(`  [unchanged] ${fullKey}`);
-        return;
+        return fullKey;
     }
 
     await s3.putObject(S3_BUCKET, fullKey, buf, buf.length, { 'Content-Type': contentType });
+    return fullKey;
+}
+
+async function removeStaleObjects(locale: string, producedKeys: Set<string>): Promise<void> {
+    const prefix = `${S3_PREFIX ? S3_PREFIX + '/' : ''}${locale}/`;
+    const stale: string[] = [];
+    for await (const obj of s3.listObjectsV2(S3_BUCKET, prefix, true)) {
+        if (obj.name && !producedKeys.has(obj.name)) {
+            stale.push(obj.name);
+        }
+    }
+    if (stale.length > 0) {
+        await s3.removeObjects(S3_BUCKET, stale);
+        console.log(`  [${locale}] Removed ${stale.length} stale object(s).`);
+    }
 }
 
 async function fetchSectionsV3(locale: string): Promise<Section[]> {
@@ -164,6 +179,7 @@ async function main(): Promise<void> {
         fs.mkdirSync(localeDir, { recursive: true });
 
         let totalChapters = 0;
+        const producedKeys = new Set<string>();
 
         for (const [index, section] of published.entries()) {
             const filename = `${SOURCE_DOCUMENT}-${index + 1}-${section.slug.toLowerCase()}.md`;
@@ -172,8 +188,8 @@ async function main(): Promise<void> {
             const markdown = buildMarkdown(section, locale);
             fs.writeFileSync(mdPath, markdown, 'utf8');
 
-            // Upload to S3
-            await uploadToS3(`${locale}/${filename}`, markdown, 'text/markdown');
+            const fullKey = await uploadToS3(`${locale}/${filename}`, markdown, 'text/markdown');
+            producedKeys.add(fullKey);
 
             const chapterCount = (section.chapters ?? []).filter(
                 c => c.published_at !== null
@@ -184,6 +200,8 @@ async function main(): Promise<void> {
                 `  [${locale}/${section.slug}] ${section.title}  (${chapterCount} chapters) – uploaded`
             );
         }
+
+        await removeStaleObjects(locale, producedKeys);
 
         console.log(`[${locale}] Done. Sections: ${published.length}, chapters: ${totalChapters}`);
         grandTotalSections += published.length;

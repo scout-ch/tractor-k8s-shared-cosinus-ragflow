@@ -12,6 +12,10 @@ The instance is explicitly scoped to indexing/search only — it does not host L
 
 On git push, the application is automatically re-deployed. For this reason, leave all git commit and git push actions to the user - do not commit and push on your own.
 
+If available and unless instructed otherwise, always use the /ponytail skill to change code in this repo
+
+After finishing work, if there was some basic knowledge about the repo that you want to memorize for later sessions, ask the user whether you should update AGENTS.md with this info.
+
 ## Repo layout
 
 - `README.md` contains a short description of the repo, setup documentation and a todo list with the next tasks to implement.
@@ -31,6 +35,7 @@ On git push, the application is automatically re-deployed. For this reason, leav
 - One markdown file = one Strapi *section*; chapters become `##` headings within that file, not separate documents.
 - Metadata is embedded as YAML frontmatter directly in the `.md` file (`buildFrontmatter` in `app.ts`) — there used to be sidecar `metadata_<id>.json` files, that pattern was removed, don't reintroduce it.
 - Per-source, non-secret config (base URL, API version, source URL template, S3 bucket/prefix) lives in `helm/values.yaml` under `datasource.strapi.<name>`; secrets live in `helm/templates/datasources/strapi-secrets.yaml`.
+- `app.ts`'s `removeStaleObjects` deletes S3 objects from a previous run that the current run no longer produces (diffed per-locale against each source's S3 prefix).
 - No test framework — `strapi/frontmatter.check.ts` and `strapi/parse.check.ts` are plain `assert`-based self-checks (`npm test` in `strapi/` runs `tsc --noEmit` + both). Update these alongside any change to `buildFrontmatter`/`parse.ts` instead of adding a test runner.
 
 ## Working with the cudesch adapter
@@ -41,7 +46,7 @@ On git push, the application is automatically re-deployed. For this reason, leav
 - One markdown file = one BookStack *chapter* or one loose *page* (a page placed directly in a book, not inside any chapter) — unlike strapi, chapters are split into separate documents rather than becoming `##` headings in one file. `bookstack.ts`'s `flattenBook` does this split and filters out draft/template pages.
 - Content comes from BookStack's own `.../export/markdown` endpoint per chapter/page, not reassembled from HTML.
 - Unlike strapi, this is a single datasource, not a map of named sources — `datasource.cudesch` in `helm/values.yaml` is a flat config block, and `helm/templates/datasources/cudesch.yaml`/`cudesch-secrets.yaml` have no `range`.
-- `app.ts`'s `removeStaleObjects` deletes S3 objects from a previous run that the current run no longer produces (diffed against the bucket's locale prefix) — strapi doesn't do this yet, so don't assume its absence there is deliberate.
+- `app.ts`'s `removeStaleObjects` deletes S3 objects from a previous run that the current run no longer produces (diffed against the bucket's locale prefix).
 - No test framework — `cudesch/bookstack.check.ts` is a plain `assert`-based self-check (`npm test` runs `tsc --noEmit` + it). Update it alongside any change to `bookstack.ts`.
 
 ## Working with the Helm chart

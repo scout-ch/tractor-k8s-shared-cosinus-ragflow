@@ -14,8 +14,8 @@ implementations to copy from, depending on shape:
 - `strapi/` (thilo, hering) — one adapter reused for multiple named sources
   via a `datasource.strapi.<name>` map in `values.yaml` and a `range` over
   it in the CronJob template.
-- `cudesch/` — a single source with per-locale auth tokens, a flat (non-map)
-  `datasource.cudesch` config block, and stale-S3-object cleanup.
+- `cudesch/` — a single source with per-locale auth tokens and a flat
+  (non-map) `datasource.cudesch` config block.
 
 ## Procedure
 
