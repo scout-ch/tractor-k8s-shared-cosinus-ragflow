@@ -19,7 +19,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "ragflow.labels" . | nindent 8 }}
+        {{- include "ragflow.podLabels" . | nindent 8 }}
         app.kubernetes.io/component: taskexecutor
       annotations:
         checksum/ragflow-secrets: {{ include (print $.Template.BasePath "/ragflow-secrets.yaml") . | sha256sum }}

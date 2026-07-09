@@ -35,7 +35,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "ragflow.labels" . | nindent 8 }}
+        {{- include "ragflow.podLabels" . | nindent 8 }}
         app.kubernetes.io/component: redis
       annotations:
         checksum/redis-secrets: {{ include (print $.Template.BasePath "/redis-secrets.yaml") . | sha256sum }}

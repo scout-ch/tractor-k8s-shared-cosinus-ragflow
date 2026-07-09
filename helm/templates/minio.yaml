@@ -39,7 +39,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "ragflow.labels" . | nindent 8 }}
+        {{- include "ragflow.podLabels" . | nindent 8 }}
         app.kubernetes.io/component: minio
     spec:
       {{- if or .Values.imagePullSecrets .Values.minio.image.pullSecrets }}

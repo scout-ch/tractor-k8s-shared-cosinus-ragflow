@@ -34,7 +34,7 @@ spec:
   template:
     metadata:
       labels:
-      {{- include "ragflow.labels" . | nindent 8 }}
+      {{- include "ragflow.podLabels" . | nindent 8 }}
         app.kubernetes.io/component: elasticsearch
       annotations:
         checksum/es-config: {{ include (print $.Template.BasePath "/elasticsearch-config.yaml") . | sha256sum }}

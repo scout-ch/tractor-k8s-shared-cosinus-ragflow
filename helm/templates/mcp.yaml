@@ -15,7 +15,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "ragflow.labels" . | nindent 8 }}
+        {{- include "ragflow.podLabels" . | nindent 8 }}
         app.kubernetes.io/component: mcp
     spec:
       # Kubernetes injects service link environment variables which accidentally match the name of variables

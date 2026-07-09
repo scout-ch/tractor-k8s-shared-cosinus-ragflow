@@ -43,6 +43,19 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+Pod template labels. Like ragflow.labels but without helm.sh/chart: under Flux's
+reconcileStrategy: Revision, the chart version (and thus this label) changes on every
+git push, which would otherwise force a rollout of every workload on every push.
+*/}}
+{{- define "ragflow.podLabels" -}}
+{{ include "ragflow.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
 Selector labels
 */}}
 {{- define "ragflow.selectorLabels" -}}
