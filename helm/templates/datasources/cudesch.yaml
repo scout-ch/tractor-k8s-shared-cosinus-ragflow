@@ -45,8 +45,6 @@ spec:
               env:
                 - name: CUDESCH_BASE_URL
                   value: {{ .Values.datasource.cudesch.baseUrl | quote }}
-                - name: SOURCE_DOCUMENT
-                  value: cudesch
                 - name: S3_ENDPOINT
                   value: {{ .Values.datasource.cudesch.s3Endpoint | default (printf "http://%s-minio:9000" (include "ragflow.fullname" .)) | quote }}
                 - name: S3_REGION

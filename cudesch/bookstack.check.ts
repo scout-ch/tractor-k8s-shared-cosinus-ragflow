@@ -69,13 +69,13 @@ assert.strictEqual(
 
 // --- buildFrontmatter -----------------------------------------------------------
 
-const fm = buildFrontmatter(docs[0], 'https://cudesch.scout.ch/de/books/.../chapter/...', 'cudesch');
+const fm = buildFrontmatter(docs[0], 'https://cudesch.scout.ch/de/books/.../chapter/...', book.slug);
 assert.ok(fm.startsWith('---\n'), 'must start with delimiter');
 assert.ok(
     fm.includes('title: "Die Biberstufe mit Freud debii – Personen in der Biberstufe"'),
     'title must combine book and chapter name'
 );
-assert.ok(fm.includes('source_document: "cudesch"'));
+assert.ok(fm.includes('source_document: "die-biberstufe-mit-freud-debii"'));
 assert.strictEqual((fm.match(/---/g) || []).length, 2, 'exactly two delimiters');
 
 console.log('bookstack.check.ts: OK');

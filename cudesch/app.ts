@@ -12,8 +12,6 @@ const SUPPORTED_LOCALES = ['de', 'fr', 'it'];
 const BASE_URL = process.env.CUDESCH_BASE_URL ?? 'https://cudesch.scout.ch';
 const OUTPUT_DIR = path.join(__dirname, 'output');
 
-const SOURCE_DOCUMENT = process.env.SOURCE_DOCUMENT ?? 'cudesch';
-
 const TOKENS: Record<string, string> = {
     de: process.env.CUDESCH_API_TOKEN_DE!,
     fr: process.env.CUDESCH_API_TOKEN_FR!,
@@ -126,17 +124,17 @@ async function main(): Promise<void> {
         const producedKeys = new Set<string>();
         let docCount = 0;
 
-        for (const [bookIdx, bookRef] of books.entries()) {
+        for (const bookRef of books) {
             const book = await getBook(base, token, bookRef.id);
             const docs = flattenBook(book);
 
             for (const [itemIdx, doc] of docs.entries()) {
                 const content = await exportMarkdown(base, token, doc.kind, doc.id);
                 const sourceUrl = buildSourceUrl(doc, locale, BASE_URL);
-                const markdown = buildFrontmatter(doc, sourceUrl, SOURCE_DOCUMENT) +
+                const markdown = buildFrontmatter(doc, sourceUrl, book.slug) +
                     `# ${doc.bookName} – ${doc.name}\n\n${content.trim()}\n`;
 
-                const filename = `${SOURCE_DOCUMENT}-${bookIdx + 1}-${book.slug}-${itemIdx + 1}-${doc.slug}.md`;
+                const filename = `${book.slug}-${itemIdx + 1}-${doc.slug}.md`;
                 fs.writeFileSync(path.join(localeDir, filename), markdown, 'utf8');
 
                 const fullKey = await uploadToS3(`${locale}/${filename}`, markdown, 'text/markdown');
