@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as Minio from 'minio';
 import type { BookStackBook, BookStackBookListItem, BookStackListResponse, DocKind } from './types';
 import { flattenBook, buildSourceUrl, buildFrontmatter } from './bookstack';
+import { md5Hex, shouldSkipUpload } from './upload';
 
 const SUPPORTED_LOCALES = ['de', 'fr', 'it'];
 // cudesch.scout.ch is three separate BookStack instances, one per locale, each with its own
@@ -35,6 +36,20 @@ const s3 = new Minio.Client({
 async function uploadToS3(key: string, body: string, contentType: string): Promise<string> {
     const fullKey = S3_PREFIX ? `${S3_PREFIX}/${key}` : key;
     const buf = Buffer.from(body, 'utf8');
+    const md5 = md5Hex(buf);
+
+    let existingEtag: string | null = null;
+    try {
+        existingEtag = (await s3.statObject(S3_BUCKET, fullKey)).etag;
+    } catch (err: any) {
+        if (err.code !== 'NotFound') throw err;
+    }
+
+    if (shouldSkipUpload(md5, existingEtag)) {
+        console.log(`  [unchanged] ${fullKey}`);
+        return fullKey;
+    }
+
     await s3.putObject(S3_BUCKET, fullKey, buf, buf.length, { 'Content-Type': contentType });
     return fullKey;
 }
