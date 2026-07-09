@@ -31,10 +31,10 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
   - [ ] "Pfaditechnik in Wort und Bild"
   - [ ] Regional or cantonal documentation
   - [ ] (optional) Cudesch PDFs from issuu that aren't yet on cudesch.scout.ch
-- [ ] Automate document re-indexing when some documentation changes (automatic if using native ragflow data sources)
-- [ ] Set up multiple datasets / knowledge bases or another way to filter the documents by relevance to common use cases (e.g. only documents for J+S Basis courses)
+- [x] Set up datasource sync cronjobs + native ragflow data sources in order to automate document re-indexing when some documentation changes
+- [x] Set up metadata to filter the documents by relevance to common use cases (e.g. only documents for J+S Basis courses)
 - [ ] MCP server so that LLMs can use this tool
-- [ ] Set up multilinguality / separate datasets for the French and Italian versions of the documentation
+- [x] Set up multilinguality / separate datasets for the French and Italian versions of the documentation
 - [ ] Set up some automated end-to-end testing
 - [ ] Set up renovate bot to auto-update all third-party software (risky, ragflow often breaks things...)
 
@@ -85,7 +85,7 @@ python3 -c "from common import settings; from admin.server.auth import init_defa
 - Under Data Sources, manually add S3 data sources for each language and adapter. Bucket name is `ragflow-<adapter name>`, Region `us-east-1`, prefix `de/` etc., Mode `S3 Compatible`, AWS Access Key ID `rag_flow`, AWS Secret Access Key is the minio password from secrets.yml, Addressing Style `Path Style`, Endpoint URL `http://ragflow-minio:9000`, Sync deleted files `yes`. Then, edit each adapter and set Prune Freq `30` minutes, Refresh Freq `30` minutes.
 - Create one dataset per language (e.g. "PBS RAG DE")
 - Under the dataset's configuration, set the language, set Image & table context window to `100` and connect the data sources of the matching language.
-- Also in configuration, activate Auto metadata in Settings activate the Built-in update_time and file_name. Under Generation, add `title`, `source_document` and `source_url` with description like `The title of the content. In markdown files, this must be copied verbatim from the "title" in the frontmatter.`, plus a `locale` field with `Always output "de" in this knowledge base.` and restricted to the dataset's language.
+- Also in configuration, activate Auto metadata, then in the Auto metadata Settings activate the Built-in update_time and file_name. Under Generation, add `title`, `source_document` and `source_url` with description like `The title of the content. In markdown files, this must be copied verbatim from the "title" in the frontmatter.`, plus a `locale` field with `Always output "de" in this knowledge base.` and restricted to the dataset's language.
 
 ## Why RAGFlow?
 
