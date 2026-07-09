@@ -24,6 +24,7 @@ After finishing work, if there was some basic knowledge about the repo that you 
 - `strapi/` — a TypeScript adapter, containerized and run as the `thilo` and `hering` datasource CronJobs (`helm/templates/datasources/strapi.yaml`); see "Working with the strapi adapter" below.
 - `cudesch/` — a TypeScript adapter, containerized and run as the `cudesch` datasource CronJob (`helm/templates/datasources/cudesch.yaml`), syncing cudesch.scout.ch content into RAGFlow; see "Working with the cudesch adapter" below.
 - `.github/workflows/build-images.yml` — builds and pushes the `cudesch` datasource image to GHCR on push to `main`/tags and nightly; add new entries to the `matrix.image` list when adding datasource containers.
+- `.github/workflows/test.yml` — runs `npm test` for every adapter directory (`matrix.adapter`) plus `helm lint` on every push/PR; add new entries to `matrix.adapter` when adding a datasource adapter.
 - `secrets.example.yml` / `secrets.yml` — Kubernetes `Secret` manifests consumed by the FluxCD `HelmRelease` via `valuesFrom`. `secrets.yml` and `.env` are gitignored and must be created locally (`cp secrets.example.yml secrets.yml`) before first install.
 - `pbs-rag-comparison.ods` — the evaluation spreadsheet documenting why RAGFlow was chosen over alternatives (see README "Why RAGFlow?").
 
@@ -36,7 +37,7 @@ After finishing work, if there was some basic knowledge about the repo that you 
 - Metadata is embedded as YAML frontmatter directly in the `.md` file (`buildFrontmatter` in `app.ts`) — there used to be sidecar `metadata_<id>.json` files, that pattern was removed, don't reintroduce it.
 - Per-source, non-secret config (base URL, API version, source URL template, S3 bucket/prefix) lives in `helm/values.yaml` under `datasource.strapi.<name>`; secrets live in `helm/templates/datasources/strapi-secrets.yaml`.
 - `app.ts`'s `removeStaleObjects` deletes S3 objects from a previous run that the current run no longer produces (diffed per-locale against each source's S3 prefix).
-- No test framework — `strapi/frontmatter.check.ts` and `strapi/parse.check.ts` are plain `assert`-based self-checks (`npm test` in `strapi/` runs `tsc --noEmit` + both). Update these alongside any change to `buildFrontmatter`/`parse.ts` instead of adding a test runner.
+- No test framework — `strapi/frontmatter.check.ts` and `strapi/parse.check.ts` are plain `assert`-based self-checks (`npm test` in `strapi/` runs `tsc --noEmit` + both). Update these alongside any change to `buildFrontmatter`/`parse.ts` instead of adding a test runner. Runs in CI via `.github/workflows/test.yml`.
 
 ## Working with the cudesch adapter
 
@@ -47,7 +48,7 @@ After finishing work, if there was some basic knowledge about the repo that you 
 - Content comes from BookStack's own `.../export/markdown` endpoint per chapter/page, not reassembled from HTML.
 - Unlike strapi, this is a single datasource, not a map of named sources — `datasource.cudesch` in `helm/values.yaml` is a flat config block, and `helm/templates/datasources/cudesch.yaml`/`cudesch-secrets.yaml` have no `range`.
 - `app.ts`'s `removeStaleObjects` deletes S3 objects from a previous run that the current run no longer produces (diffed against the bucket's locale prefix).
-- No test framework — `cudesch/bookstack.check.ts` is a plain `assert`-based self-check (`npm test` runs `tsc --noEmit` + it). Update it alongside any change to `bookstack.ts`.
+- No test framework — `cudesch/bookstack.check.ts` is a plain `assert`-based self-check (`npm test` runs `tsc --noEmit` + it). Update it alongside any change to `bookstack.ts`. Runs in CI via `.github/workflows/test.yml`.
 
 ## Working with the Helm chart
 
@@ -55,8 +56,8 @@ After finishing work, if there was some basic knowledge about the repo that you 
 - Secrets are never set as literal values in `helm/values.yaml` or `fluxcd/ragflow.yaml` — they're injected via `valuesFrom` referencing Kubernetes `Secret` resources (see `secrets.example.yml` for the full list of secrets FluxCD expects to already exist in the namespace).
 - The `mcp` and `ragflow`/`datasync`/`taskexecutor` deployments all run from the *same* RAGFlow image but with different `entrypoint.sh` flags (`--disable-webserver`, `--enable-mcpserver`, etc. — see `helm/templates/mcp.yaml` and `helm/templates/datasync.yaml`). When changing container startup behavior, check whether the change needs to apply to all of these variants.
 - New datasources are added as a CronJob under `helm/templates/datasources/`, using the `datasource.imageBase` value as the image prefix and a corresponding image built by `.github/workflows/build-images.yml`.
-- There's no local `helm template`/lint tooling configured in this repo; validate chart changes with `helm template ./helm -f <values-file>` or `helm lint ./helm` if Helm is available locally.
-- Several templates use `required(...)` on secret/config values that are normally supplied via `valuesFrom` in `fluxcd/ragflow.yaml`, not present in `helm/values.yaml` — plain `helm template ./helm -f helm/values.yaml` fails against these. Stub them with `--set` to render locally, e.g.: `--set minio.password=dummy --set ragflow.secret_key=dummy --set redis.password=dummy --set elasticsearch.password=dummy --set minio.accessKey=dummy --set minio.secretKey=dummy --set ragflow.storage.oauth.clientSecret=dummy --set ragflow.ragflowApiKey=dummy --set ingress.host=dummy.example.com`.
+- `helm lint` runs in CI (`.github/workflows/test.yml`, `helm-lint` job) on every push/PR; validate chart changes locally the same way with `helm template ./helm -f <values-file>` or `helm lint ./helm` if Helm is available locally.
+- Several templates use `required(...)` on secret/config values that are normally supplied via `valuesFrom` in `fluxcd/ragflow.yaml`, not present in `helm/values.yaml` — plain `helm template ./helm -f helm/values.yaml`/`helm lint ./helm -f helm/values.yaml` fails against these. `helm/ci-dummy-secrets.yaml` stubs all of them with dummy values; add `-f helm/ci-dummy-secrets.yaml` to render/lint locally (the CI job uses the same file — add any newly-`required(...)`-ed field there, not as inline `--set` flags, so it stays the one place to update).
 
 ## Secrets and env files
 

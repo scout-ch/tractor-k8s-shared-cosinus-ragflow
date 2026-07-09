@@ -2,18 +2,17 @@ name: Test
 
 on:
   push:
-    paths:
-      - "strapi/**"
   pull_request:
-    paths:
-      - "strapi/**"
 
 jobs:
-  strapi:
+  datasource-adapter:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        adapter: [strapi, cudesch]
     defaults:
       run:
-        working-directory: strapi
+        working-directory: ${{ matrix.adapter }}
     steps:
       - uses: actions/checkout@v5
 
@@ -24,3 +23,12 @@ jobs:
       - run: npm ci
 
       - run: npm test
+
+  helm-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: azure/setup-helm@v4
+
+      - run: helm lint ./helm -f helm/values.yaml -f helm/ci-dummy-secrets.yaml

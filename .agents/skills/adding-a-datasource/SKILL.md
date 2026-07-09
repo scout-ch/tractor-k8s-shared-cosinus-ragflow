@@ -41,7 +41,11 @@ implementations to copy from, depending on shape:
       (value is just `<name>`), source_url (closest URL that points to the
       contents as seen on the source webapp)
 
-3. Add tests for the adapter, and add them to the GitHub Actions CI.
+3. Add tests for the adapter (`*.check.ts` assert-based self-checks wired
+   into `npm test`, following `strapi/`'s or `cudesch/`'s pattern — no test
+   framework). Add `<name>` to `matrix.adapter` in
+   `.github/workflows/test.yml` so `npm test` actually runs in CI — skip this
+   and the tests only ever run locally.
 
 4. Helm: non-secret config under `values.yaml`'s `datasource.<name>`;
    `helm/templates/datasources/<name>.yaml` CronJob using
@@ -49,7 +53,9 @@ implementations to copy from, depending on shape:
    initContainer (`mc mb --ignore-existing`, copy `cudesch.yaml`) — never
    assume the bucket exists. Only add a dedicated `Secret` if the source
    needs creds beyond MinIO root (`cudesch-secrets.yaml` shows the fallback).
-   Validate with `helm template ./helm -f helm/values.yaml --set ...`
+   If any new value is `required(...)`, add a dummy for it to
+   `helm/ci-dummy-secrets.yaml` too, or `helm lint` breaks in CI. Validate
+   with `helm template ./helm -f helm/values.yaml -f helm/ci-dummy-secrets.yaml`.
 
 5. RAGFlow won't ingest the bucket on its own — this repo has no automation
    for creating the dataset/file-source connector (README todo: "Set up
