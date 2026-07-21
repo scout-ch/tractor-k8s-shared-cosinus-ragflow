@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        adapter: [strapi, cudesch]
+        adapter: [strapi, cudesch, pdf]
     defaults:
       run:
         working-directory: ${{ matrix.adapter }}

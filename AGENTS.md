@@ -50,6 +50,16 @@ After finishing work, if there was some basic knowledge about the repo that you 
 - `app.ts`'s `removeStaleObjects` deletes S3 objects from a previous run that the current run no longer produces (diffed against the bucket's locale prefix).
 - No test framework — `cudesch/bookstack.check.ts` is a plain `assert`-based self-check (`npm test` runs `tsc --noEmit` + it). Update it alongside any change to `bookstack.ts`. Runs in CI via `.github/workflows/test.yml`.
 
+## Working with the pdf adapter
+
+`pdf/` is a generic adapter for documents that live at a fixed URL per locale (no API to page through, no login step) — reused across many unrelated PDFs via the `datasource.pdf.<name>` map in `helm/values.yaml` (same map/`range` shape as `strapi/`, one shared Docker image). Key facts that aren't obvious from a first read:
+
+- One config entry = one document, with up to three fixed URLs (`urls.de`/`fr`/`it`); a locale with no URL configured is simply skipped. There's no per-source API to enumerate multiple files, so unlike `strapi`/`cudesch` there's no ordinal in the filename — just `<SOURCE_DOCUMENT>.pdf`, used raw.
+- Downloads are a plain `fetch(url)` — Node's native `fetch` follows redirects by default, so fixed URLs that resolve through a vanity-domain redirect chain need no special handling.
+- **Metadata needs to be added manually by the user in the RAGFlow UI.** The frontmatter trick or sidecar metadata files will not work for PDFs, RAGFlow only reads the **S3 object key (filename) and ETag**. Using the API to set the metadata after an upload would require an API key and be prone to race conditions.
+- `app.ts`'s `removeStaleObjects` (copied from `cudesch/app.ts`) still matters even though each source produces just one file per locale: if the map key is renamed, the old filename becomes an orphan.
+- No test framework — `pdf/pdf.check.ts` and `pdf/upload.check.ts` are plain `assert`-based self-checks (`npm test` runs `tsc --noEmit` + both). The pure `buildKey` helper lives in `pdf/pdf.ts`, separate from `app.ts`'s entrypoint — `app.ts` calls `main()` unconditionally at module scope, so importing it (e.g. from a test) has the side effect of running it; keep testable logic out of `app.ts` for exactly this reason.
+
 ## Working with the Helm chart
 
 - Chart values documentation and defaults live in `helm/values.yaml`; production overrides live in `fluxcd/ragflow.yaml` under `spec.values`. When adding a new configurable value, add the default to `helm/values.yaml` first.

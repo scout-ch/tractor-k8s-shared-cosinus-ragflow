@@ -1,4 +1,4 @@
-{{- range $source_document, $src := .Values.datasource.strapi }}
+{{- range $source_document, $src := .Values.datasource.pdf }}
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -8,10 +8,10 @@ metadata:
     {{- include "ragflow.labels" $ | nindent 4 }}
     app.kubernetes.io/component: ragflow
 spec:
-  schedule: {{ $src.schedule | default "45 * * * *" | quote }}
+  schedule: {{ $src.schedule | default "0 5 * * *" | quote }}
   jobTemplate:
     spec:
-      ttlSecondsAfterFinished: 7200
+      ttlSecondsAfterFinished: 172800
       backoffLimit: 0
       template:
         spec:
@@ -41,17 +41,17 @@ spec:
                 - mc alias set target "$S3_ENDPOINT" "$S3_ACCESS_KEY_ID" "$S3_SECRET_ACCESS_KEY" && mc mb --ignore-existing "target/$S3_BUCKET"
           containers:
             - name: datasync-{{ $source_document }}
-              image: {{ $.Values.datasource.imageBase }}-strapi
+              image: {{ $.Values.datasource.imageBase }}-pdf
               imagePullPolicy: Always
               env:
-                - name: STRAPI_BASE_URL
-                  value: {{ $src.baseUrl | quote }}
-                - name: STRAPI_API_VERSION
-                  value: {{ $src.apiVersion | default "v4" | quote }}
                 - name: SOURCE_DOCUMENT
                   value: {{ $source_document | quote }}
-                - name: SOURCE_URL_TEMPLATE
-                  value: {{ $src.sourceUrlTemplate | quote }}
+                - name: PDF_URL_DE
+                  value: {{ $src.urls.de | default "" | quote }}
+                - name: PDF_URL_FR
+                  value: {{ $src.urls.fr | default "" | quote }}
+                - name: PDF_URL_IT
+                  value: {{ $src.urls.it | default "" | quote }}
                 - name: S3_ENDPOINT
                   value: {{ $src.s3Endpoint | default (printf "http://%s-minio:9000" (include "ragflow.fullname" $)) | quote }}
                 - name: S3_REGION

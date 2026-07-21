@@ -9,13 +9,19 @@ description: Use when adding a new datasource to this repo — a CronJob that fe
 
 A datasource is a container run on a schedule
 (`helm/templates/datasources/*.yaml` CronJobs) that fetches content from one
-external system and uploads files to an S3 bucket. Two reference
+external system and uploads files to an S3 bucket. Three reference
 implementations to copy from, depending on shape:
 - `strapi/` (thilo, hering) — one adapter reused for multiple named sources
   via a `datasource.strapi.<name>` map in `values.yaml` and a `range` over
   it in the CronJob template.
 - `cudesch/` — a single source with per-locale auth tokens and a flat
   (non-map) `datasource.cudesch` config block.
+- `pdf/` — generic adapter for a fixed PDF URL per locale, reused across many
+  unrelated documents via a `datasource.pdf.<name>` map (same map shape as
+  `strapi/`). Copy this one when the new source is "download this exact PDF
+  URL", not an API to page through. Fixed-URL downloads that resolve through
+  redirects (e.g. a short vanity domain that 301/302s to the real file host)
+  are supported.
 
 ## Procedure
 
@@ -35,8 +41,15 @@ implementations to copy from, depending on shape:
       orphaned files forever — index-based keys are not enough on their own.
       `cudesch/app.ts`'s `removeStaleObjects` is a worked example.
     - If the best output format is Markdown: metadata goes in YAML frontmatter
-      in the file. If it's PDF: Check what RAGFlow actually reads from S3
-      object metadata/tags before inventing a way to carry source info.
+      in the file — RAGFlow's "Auto Metadata" feature (configured per-dataset
+      in the admin UI, see README "Manual setup in the RAGFlow UI") is an LLM
+      extraction step, not a raw parser: it's given a per-field description
+      like "copy verbatim from the frontmatter's title", and reads that out
+      of the document content it's fed.
+    - If it's PDF (or any other binary format): RAGFlow only reads the **S3
+      object key (filename) and ETag**, never S3 object metadata or tags.
+      So metadata must be encoded in the filename or manually configured by
+      the user in the RAGFlow UI after the first sync.
     - Required metadata: title (description of file content), source_document
       (value is just `<name>`), source_url (closest URL that points to the
       contents as seen on the source webapp)

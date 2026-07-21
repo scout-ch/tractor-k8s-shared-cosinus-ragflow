@@ -24,8 +24,14 @@ This RAGFlow instance is explicitly not intended to directly build LLM pipelines
       - [x] Add tests for the adapter
   - [x] hering.scout.ch (Strapi)
   - [x] All cudesch content from cudesch.scout.ch
-  - [ ] PDF brochures about education courses (used in Topkurs)
-  - [ ] Anker and other pdfs from the PBS download page
+  - [x] Generic adapter for PDFs fetched from a fixed URL per locale
+      - [x] Filenames on S3 are the source_document identifier (config map key)
+      - [x] Obsolete files should be automatically cleaned up from the S3 storage
+      - [x] Add tests for the adapter
+      - [x] For now, PDF metadata (title, source_document, source_url) must be configured manually on the loaded documents, once the PDF has been ingested for the first time
+  - [x] Anker
+  - [ ] PDF brochures about education courses (used in Topkurs) — configure a `datasource.pdf.<name>` entry once URLs are known
+  - [ ] Other pdfs from the PBS download page
   - [ ] J+S documentation relevant to scouting, if legally allowed
   - [ ] MiData documentation on docu.scout.ch and hitobito.readthedocs.io and github.com/hitobito/hitobito_pbs
   - [ ] "Pfaditechnik in Wort und Bild"

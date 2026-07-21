@@ -240,6 +240,19 @@ datasource:
     apiTokenDe:
     apiTokenFr:
     apiTokenIt:
+  pdf:
+    anker:
+      schedule: "0 5 * * *"
+      urls:
+        de: https://anker.scouts.ch
+        fr: https://ankerfr.scouts.ch
+        it: https://ankerit.scouts.ch
+      s3Endpoint:
+      s3Region: us-east-1
+      s3Bucket: ragflow-anker
+      s3Prefix:
+      s3AccessKeyId:
+      s3SecretAccessKey:
 
 # This block is for setting up web service ingress. For more information, see:
 # https://kubernetes.io/docs/concepts/services-networking/ingress/
