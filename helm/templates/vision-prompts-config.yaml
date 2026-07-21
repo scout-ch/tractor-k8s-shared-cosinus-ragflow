@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "ragflow.fullname" . }}-vision-prompts
   labels:
-    {{- include "ragflow.labels" . | nindent 4 }}
+    {{- include "ragflow.podLabels" . | nindent 4 }}
 data:
 {{- range $path, $_ := .Files.Glob "overrides/prompts/*.md" }}
   {{ base $path }}: |
